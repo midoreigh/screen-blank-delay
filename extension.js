@@ -35,6 +35,182 @@ function getDelayOptions() {
     ];
 }
 
+function getDelayChips() {
+    return [
+        {seconds: 60, text: '1m', label: _('1 minute')},
+        {seconds: 120, text: '2m', label: _('2 minutes')},
+        {seconds: 180, text: '3m', label: _('3 minutes')},
+        {seconds: 300, text: '5m', label: _('5 minutes')},
+        {seconds: 480, text: '8m', label: _('8 minutes')},
+        {seconds: 600, text: '10m', label: _('10 minutes')},
+        {seconds: 720, text: '12m', label: _('12 minutes')},
+        {seconds: 900, text: '15m', label: _('15 minutes')},
+        {seconds: 1800, text: '30m', label: _('30 minutes')},
+        {seconds: 3600, text: '1h', label: _('1 hour')},
+        {seconds: 0, text: _('Never'), label: _('Never')},
+    ];
+}
+
+function createDelayChipsGrid(currentSeconds, onSelect) {
+    const item = new PopupMenu.PopupBaseMenuItem({
+        reactive: false,
+        can_focus: false,
+        style_class: 'screen-blank-delay-grid-container',
+    });
+
+    const gridBox = new St.BoxLayout({
+        orientation: Clutter.Orientation.VERTICAL,
+        x_expand: true,
+        style_class: 'screen-blank-delay-grid-container',
+    });
+
+    const chips = getDelayChips();
+    const rows = [
+        chips.slice(0, 4),   // 1m, 2m, 3m, 5m
+        chips.slice(4, 8),   // 8m, 10m, 12m, 15m
+        chips.slice(8, 11),  // 30m, 1h, Never
+    ];
+
+    const chipButtons = [];
+
+    for (const rowData of rows) {
+        const rowBox = new St.BoxLayout({
+            orientation: Clutter.Orientation.HORIZONTAL,
+            x_expand: true,
+            style_class: 'screen-blank-delay-row',
+        });
+
+        for (const chip of rowData) {
+            const btn = new St.Button({
+                label: chip.text,
+                style_class: 'button screen-blank-delay-chip',
+                can_focus: true,
+                toggle_mode: true,
+                checked: chip.seconds === currentSeconds,
+                x_expand: true,
+                accessible_name: chip.label,
+            });
+
+            if (chip.seconds === currentSeconds)
+                btn.add_style_class_name('selected');
+
+            btn.connect('clicked', () => {
+                for (const b of chipButtons) {
+                    b.checked = false;
+                    b.remove_style_class_name('selected');
+                }
+                btn.checked = true;
+                btn.add_style_class_name('selected');
+                onSelect(chip.seconds);
+            });
+
+            chipButtons.push(btn);
+            rowBox.add_child(btn);
+        }
+
+        gridBox.add_child(rowBox);
+    }
+
+    item.add_child(gridBox);
+    return item;
+}
+
+function createMonitorDelayChipsGrid(monDelay, onSelect) {
+    const item = new PopupMenu.PopupBaseMenuItem({
+        reactive: false,
+        can_focus: false,
+        style_class: 'screen-blank-delay-grid-container',
+    });
+
+    const gridBox = new St.BoxLayout({
+        orientation: Clutter.Orientation.VERTICAL,
+        x_expand: true,
+        style_class: 'screen-blank-delay-grid-container',
+    });
+
+    const chipButtons = [];
+
+    // Follow System button
+    const followRow = new St.BoxLayout({
+        orientation: Clutter.Orientation.HORIZONTAL,
+        x_expand: true,
+        style_class: 'screen-blank-delay-row',
+    });
+
+    const followBtn = new St.Button({
+        label: _('Follow System'),
+        style_class: 'button screen-blank-delay-chip',
+        can_focus: true,
+        toggle_mode: true,
+        checked: monDelay === -1,
+        x_expand: true,
+    });
+    if (monDelay === -1)
+        followBtn.add_style_class_name('selected');
+
+    followBtn.connect('clicked', () => {
+        for (const b of chipButtons) {
+            b.checked = false;
+            b.remove_style_class_name('selected');
+        }
+        followBtn.checked = true;
+        followBtn.add_style_class_name('selected');
+        onSelect(-1);
+    });
+    chipButtons.push(followBtn);
+    followRow.add_child(followBtn);
+    gridBox.add_child(followRow);
+
+    // 11 delay options in 3 rows
+    const chips = getDelayChips();
+    const rows = [
+        chips.slice(0, 4),   // 1m, 2m, 3m, 5m
+        chips.slice(4, 8),   // 8m, 10m, 12m, 15m
+        chips.slice(8, 11),  // 30m, 1h, Never
+    ];
+
+    for (const rowData of rows) {
+        const rowBox = new St.BoxLayout({
+            orientation: Clutter.Orientation.HORIZONTAL,
+            x_expand: true,
+            style_class: 'screen-blank-delay-row',
+        });
+
+        for (const chip of rowData) {
+            const btn = new St.Button({
+                label: chip.text,
+                style_class: 'button screen-blank-delay-chip',
+                can_focus: true,
+                toggle_mode: true,
+                checked: chip.seconds === monDelay,
+                x_expand: true,
+                accessible_name: chip.label,
+            });
+
+            if (chip.seconds === monDelay)
+                btn.add_style_class_name('selected');
+
+            btn.connect('clicked', () => {
+                for (const b of chipButtons) {
+                    b.checked = false;
+                    b.remove_style_class_name('selected');
+                }
+                btn.checked = true;
+                btn.add_style_class_name('selected');
+                onSelect(chip.seconds);
+            });
+
+            chipButtons.push(btn);
+            rowBox.add_child(btn);
+        }
+
+        gridBox.add_child(rowBox);
+    }
+
+    item.add_child(gridBox);
+    return item;
+}
+
 function formatDelay(seconds) {
     if (seconds === 0)
         return _('Never');
@@ -179,6 +355,7 @@ class MonitorBlankManager {
             }
 
             // Map logical monitors (x, y) to connector
+            const logicalMonitorsList = [];
             for (const lm of logicalMonitors) {
                 const x = lm[0];
                 const y = lm[1];
@@ -187,9 +364,12 @@ class MonitorBlankManager {
                 if (monitorsOnLM && monitorsOnLM.length > 0) {
                     const connector = monitorsOnLM[0][0];
                     const displayName = connectorNames.get(connector) || connector;
-                    displayMap.set(`${x},${y}`, {connector, displayName, isPrimary});
+                    const monData = {connector, displayName, isPrimary};
+                    displayMap.set(`${x},${y}`, monData);
+                    logicalMonitorsList.push(monData);
                 }
             }
+            displayMap._list = logicalMonitorsList;
         } catch (e) {
             // fallback
         }
@@ -199,17 +379,25 @@ class MonitorBlankManager {
     _syncMonitors(displayMap) {
         const delaysDict = this._settings.get_value('per-monitor-delays').deepUnpack();
         const activeMonitors = Main.layoutManager.monitors;
+        const logicalMonitorsList = displayMap._list || [];
         const now = GLib.get_monotonic_time() / 1000000;
         const seenConnectors = new Set();
 
         for (let i = 0; i < activeMonitors.length; i++) {
             const m = activeMonitors[i];
             const key = `${m.x},${m.y}`;
-            const info = displayMap.get(key) || {};
+            let info = displayMap.get(key);
+            if (!info && i < logicalMonitorsList.length)
+                info = logicalMonitorsList[i];
+            if (!info)
+                info = {};
+
             const connector = info.connector || `Display-${i + 1}`;
             let displayName = info.displayName || _('Display %d').format(i + 1);
             if (displayName && typeof displayName.deepUnpack === 'function')
                 displayName = displayName.deepUnpack();
+            if (displayName && typeof displayName === 'object' && 'unpack' in displayName)
+                displayName = displayName.unpack();
             if (typeof displayName !== 'string')
                 displayName = String(displayName);
             const isPrimary = info.isPrimary ?? (i === Main.layoutManager.primaryIndex);
@@ -527,6 +715,25 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
             _('Configure idle timeouts')
         );
 
+        // Header settings gear button (in submenu header)
+        this._headerSettingsBtn = new St.Button({
+            style_class: 'icon-button',
+            child: new St.Icon({
+                icon_name: 'emblem-system-symbolic',
+                icon_size: 16,
+            }),
+            can_focus: true,
+            accessible_name: _('Screen Blank Settings'),
+            y_align: Clutter.ActorAlign.CENTER,
+        });
+        this._headerSettingsBtn.connect('clicked', () => {
+            this._extension.openPreferences();
+            Main.panel.closeQuickSettings();
+        });
+        if (typeof this.menu.addHeaderSuffix === 'function') {
+            this.menu.addHeaderSuffix(this._headerSettingsBtn);
+        }
+
         this._buildMenu();
         this.sync();
     }
@@ -549,39 +756,28 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
     _buildMenu() {
         this.menu.removeAll();
 
-        const delayOptions = getDelayOptions();
         const currentSystemDelay = this._sessionSettings.get_uint('idle-delay');
         const systemDelayStr = currentSystemDelay === 0 ? _('Never') : formatDelay(currentSystemDelay);
 
-        // System Delay as a compact Submenu
-        const systemSubMenu = new PopupMenu.PopupSubMenuMenuItem(
-            `${_('System Delay (All Screens)')}: ${systemDelayStr}`,
-            true
+        // System Delay header label
+        const titleItem = new PopupMenu.PopupMenuItem(
+            `${_('System Delay')}: ${systemDelayStr}`,
+            {reactive: false}
         );
-        systemSubMenu.icon.icon_name = 'preferences-desktop-screensaver-symbolic';
+        titleItem.add_style_class_name('screen-blank-monitor-title');
+        this.menu.addMenuItem(titleItem);
 
-        this._systemItems = new Map();
-        for (const opt of delayOptions) {
-            const item = new PopupMenu.PopupMenuItem(opt.label);
-            item.setOrnament(opt.seconds === currentSystemDelay ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
-            item.connect('activate', () => {
-                this._sessionSettings.set_uint('idle-delay', opt.seconds);
-                if (opt.seconds > 0)
-                    this._extSettings.set_uint('last-active-system-delay', opt.seconds);
-            });
-            this._systemItems.set(opt.seconds, item);
-            systemSubMenu.menu.addMenuItem(item);
-        }
-        this.menu.addMenuItem(systemSubMenu);
+        // 11 delays in a tile-fashion grid: 1m, 2m, 3m, 5m, 8m, 10m, 12m, 15m, 30m, 1h, Never
+        this.menu.addMenuItem(createDelayChipsGrid(currentSystemDelay, seconds => {
+            this._sessionSettings.set_uint('idle-delay', seconds);
+            if (seconds > 0)
+                this._extSettings.set_uint('last-active-system-delay', seconds);
+        }));
 
         // Per-Monitor Section (if multiple monitors or per-monitor enabled)
         const monitors = this._extension.blankManager.getMonitorsList();
         if (monitors.length > 1 || this._extSettings.get_boolean('per-monitor-enabled')) {
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-            const pmHeader = new PopupMenu.PopupMenuItem(_('Per-Screen Delay'), {reactive: false});
-            pmHeader.add_style_class_name('screen-blank-monitor-title');
-            this.menu.addMenuItem(pmHeader);
 
             for (const mon of monitors) {
                 const badge = mon.isPrimary ? _('(Primary)') : '';
@@ -596,23 +792,10 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
                 const subMenuItem = new PopupMenu.PopupSubMenuMenuItem(itemText, true);
                 subMenuItem.icon.icon_name = 'video-display-symbolic';
 
-                // Follow System option
-                const followItem = new PopupMenu.PopupMenuItem(_('Follow System'));
-                followItem.setOrnament(mon.delay === -1 ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
-                followItem.connect('activate', () => {
-                    this._extension.blankManager.setMonitorDelay(mon.connector, -1);
-                });
-                subMenuItem.menu.addMenuItem(followItem);
-
-                // Delay options
-                for (const opt of delayOptions) {
-                    const dItem = new PopupMenu.PopupMenuItem(opt.label);
-                    dItem.setOrnament(mon.delay === opt.seconds ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
-                    dItem.connect('activate', () => {
-                        this._extension.blankManager.setMonitorDelay(mon.connector, opt.seconds);
-                    });
-                    subMenuItem.menu.addMenuItem(dItem);
-                }
+                // Monitor Tile Grid of delays
+                subMenuItem.menu.addMenuItem(createMonitorDelayChipsGrid(mon.delay, seconds => {
+                    this._extension.blankManager.setMonitorDelay(mon.connector, seconds);
+                }));
 
                 // Blank this monitor now
                 subMenuItem.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
@@ -679,18 +862,16 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
         });
 
         this._buildMenu();
-
-        if (this._systemItems) {
-            for (const [sec, item] of this._systemItems.entries()) {
-                item.setOrnament(sec === currentDelay ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
-            }
-        }
     }
 
     destroy() {
         if (this._tileSettingsBtn) {
             this._tileSettingsBtn.destroy();
             this._tileSettingsBtn = null;
+        }
+        if (this._headerSettingsBtn) {
+            this._headerSettingsBtn.destroy();
+            this._headerSettingsBtn = null;
         }
         if (this.menu)
             this.menu.destroy();
@@ -755,43 +936,28 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
     _buildMenu() {
         this.menu.removeAll();
 
-        const titleItem = new PopupMenu.PopupMenuItem(_('Screen Blank Delay'), {reactive: false});
+        const currentDelay = this._sessionSettings.get_uint('idle-delay');
+        const delayStr = currentDelay === 0 ? _('Never') : formatDelay(currentDelay);
+
+        const titleItem = new PopupMenu.PopupMenuItem(
+            `${_('System Delay')}: ${delayStr}`,
+            {reactive: false}
+        );
         titleItem.add_style_class_name('screen-blank-monitor-title');
         this.menu.addMenuItem(titleItem);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-        // System Delays (compact Submenu)
-        const delayOptions = getDelayOptions();
-        const currentDelay = this._sessionSettings.get_uint('idle-delay');
-        const delayStr = currentDelay === 0 ? _('Never') : formatDelay(currentDelay);
-
-        const systemSubMenu = new PopupMenu.PopupSubMenuMenuItem(
-            `${_('System Delay (All Screens)')}: ${delayStr}`,
-            true
-        );
-        systemSubMenu.icon.icon_name = 'preferences-desktop-screensaver-symbolic';
-
-        this._systemItems = new Map();
-        for (const opt of delayOptions) {
-            const item = new PopupMenu.PopupMenuItem(opt.label);
-            item.setOrnament(opt.seconds === currentDelay ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
-            item.connect('activate', () => {
-                this._sessionSettings.set_uint('idle-delay', opt.seconds);
-                if (opt.seconds > 0)
-                    this._extSettings.set_uint('last-active-system-delay', opt.seconds);
-            });
-            this._systemItems.set(opt.seconds, item);
-            systemSubMenu.menu.addMenuItem(item);
-        }
-        this.menu.addMenuItem(systemSubMenu);
+        // 11 delays in a tile-fashion grid: 1m, 2m, 3m, 5m, 8m, 10m, 12m, 15m, 30m, 1h, Never
+        this.menu.addMenuItem(createDelayChipsGrid(currentDelay, seconds => {
+            this._sessionSettings.set_uint('idle-delay', seconds);
+            if (seconds > 0)
+                this._extSettings.set_uint('last-active-system-delay', seconds);
+        }));
 
         // Multi-Monitor Section
         const monitors = this._extension.blankManager.getMonitorsList();
         if (monitors.length > 1 || this._extSettings.get_boolean('per-monitor-enabled')) {
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-            const pmHeader = new PopupMenu.PopupMenuItem(_('Per-Screen Delay'), {reactive: false});
-            pmHeader.add_style_class_name('screen-blank-monitor-title');
-            this.menu.addMenuItem(pmHeader);
 
             for (const mon of monitors) {
                 const badge = mon.isPrimary ? _('(Primary)') : '';
@@ -806,21 +972,9 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
                 const subMenuItem = new PopupMenu.PopupSubMenuMenuItem(itemText, true);
                 subMenuItem.icon.icon_name = 'video-display-symbolic';
 
-                const followItem = new PopupMenu.PopupMenuItem(_('Follow System'));
-                followItem.setOrnament(mon.delay === -1 ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
-                followItem.connect('activate', () => {
-                    this._extension.blankManager.setMonitorDelay(mon.connector, -1);
-                });
-                subMenuItem.menu.addMenuItem(followItem);
-
-                for (const opt of delayOptions) {
-                    const dItem = new PopupMenu.PopupMenuItem(opt.label);
-                    dItem.setOrnament(mon.delay === opt.seconds ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
-                    dItem.connect('activate', () => {
-                        this._extension.blankManager.setMonitorDelay(mon.connector, opt.seconds);
-                    });
-                    subMenuItem.menu.addMenuItem(dItem);
-                }
+                subMenuItem.menu.addMenuItem(createMonitorDelayChipsGrid(mon.delay, seconds => {
+                    this._extension.blankManager.setMonitorDelay(mon.connector, seconds);
+                }));
 
                 subMenuItem.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
                 const blankNowItem = new PopupMenu.PopupMenuItem(
@@ -875,14 +1029,9 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
         const currentDelay = this._sessionSettings.get_uint('idle-delay');
         const delayStr = currentDelay === 0 ? _('Never') : formatDelay(currentDelay);
         this._label.text = ` ${delayStr}`;
+        this._icon.icon_name = currentDelay === 0 ? 'display-symbolic' : 'preferences-desktop-screensaver-symbolic';
 
         this._buildMenu();
-
-        if (this._systemItems) {
-            for (const [sec, item] of this._systemItems.entries()) {
-                item.setOrnament(sec === currentDelay ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
-            }
-        }
     }
 });
 

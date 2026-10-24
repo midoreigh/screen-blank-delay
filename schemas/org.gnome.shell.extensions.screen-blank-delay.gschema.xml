@@ -2,12 +2,12 @@
 <schemalist gettext-domain="screen-blank-delay">
   <schema id="org.gnome.shell.extensions.screen-blank-delay" path="/org/gnome/shell/extensions/screen-blank-delay/">
     <key name="show-in-quick-settings" type="b">
-      <default>true</default>
+      <default>false</default>
       <summary>Show in Quick Settings</summary>
       <description>Display the screen blank delay menu in GNOME Quick Settings</description>
     </key>
     <key name="show-in-top-bar" type="b">
-      <default>false</default>
+      <default>true</default>
       <summary>Show in Top Bar</summary>
       <description>Display an indicator in the GNOME Shell top panel</description>
     </key>

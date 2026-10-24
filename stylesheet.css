@@ -13,5 +13,50 @@
 }
 
 .screen-blank-tile-btn {
-    padding: 0 6px !important;
+    padding: 0 8px !important;
+    min-width: 28px;
+    border-radius: 9999px;
+}
+
+.screen-blank-tile-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Tile Grid for Delay Options */
+.screen-blank-delay-grid-container {
+    padding: 4px 8px;
+}
+
+.screen-blank-delay-row {
+    spacing: 6px;
+    margin-bottom: 6px;
+}
+
+.screen-blank-delay-chip {
+    padding: 6px 10px;
+    font-size: 0.85em;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 8px;
+    min-width: 44px;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.screen-blank-delay-chip:hover {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.screen-blank-delay-chip.selected,
+.screen-blank-delay-chip:checked {
+    background-color: #3584e4 !important;
+    background-color: -st-accent-color !important;
+    color: #ffffff !important;
+    color: -st-accent-fg-color !important;
+    font-weight: bold;
+}
+
+.screen-blank-delay-chip.selected:hover,
+.screen-blank-delay-chip:checked:hover {
+    background-color: #1c71d8 !important;
+    background-color: st-darken(-st-accent-color, 10%) !important;
 }

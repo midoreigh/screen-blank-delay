@@ -52,19 +52,19 @@ export default class ScreenBlankDelayPreferences extends ExtensionPreferences {
             description: _('Choose where Screen Blank Delay controls appear'),
         });
 
-        const qsRow = new Adw.SwitchRow({
-            title: _('Show in Quick Settings Menu'),
-            subtitle: _('Display toggle and submenu in GNOME Quick Settings'),
-        });
-        settings.bind('show-in-quick-settings', qsRow, 'active', Gio.SettingsBindFlags.DEFAULT);
-        locationGroup.add(qsRow);
-
         const tbRow = new Adw.SwitchRow({
-            title: _('Show in Top Bar Panel'),
+            title: _('Show in Top Bar Panel (Default)'),
             subtitle: _('Display an indicator icon with current delay on the top bar'),
         });
         settings.bind('show-in-top-bar', tbRow, 'active', Gio.SettingsBindFlags.DEFAULT);
         locationGroup.add(tbRow);
+
+        const qsRow = new Adw.SwitchRow({
+            title: _('Show in Quick Settings Menu (Optional)'),
+            subtitle: _('Display toggle and submenu in GNOME Quick Settings'),
+        });
+        settings.bind('show-in-quick-settings', qsRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+        locationGroup.add(qsRow);
 
         generalPage.add(locationGroup);
 
