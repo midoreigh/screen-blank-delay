@@ -50,8 +50,8 @@ export default class ScreenBlankDelayPreferences extends ExtensionPreferences {
         });
 
         // App Banner
-        const bannerGroup = new Adw.PreferencesGroup();
-        const bannerBox = new Gtk.Box({
+        const headerGroup = new Adw.PreferencesGroup();
+        const headerBannerBox = new Gtk.Box({
             orientation: Gtk.Orientation.HORIZONTAL,
             spacing: 16,
             margin_top: 6,
@@ -59,32 +59,32 @@ export default class ScreenBlankDelayPreferences extends ExtensionPreferences {
             halign: Gtk.Align.CENTER,
         });
 
-        const appIcon = new Gtk.Image({
+        const headerAppIcon = new Gtk.Image({
             icon_name: 'preferences-desktop-screensaver-symbolic',
             pixel_size: 48,
         });
-        bannerBox.append(appIcon);
+        headerBannerBox.append(headerAppIcon);
 
-        const titleBox = new Gtk.Box({
+        const headerTitleBox = new Gtk.Box({
             orientation: Gtk.Orientation.VERTICAL,
             valign: Gtk.Align.CENTER,
             spacing: 2,
         });
-        const appTitle = new Gtk.Label({
+        const headerAppTitle = new Gtk.Label({
             label: '<span size="large" weight="bold">Screen Blank Delay</span>',
             use_markup: true,
             xalign: 0,
         });
-        const appSubtitle = new Gtk.Label({
+        const headerAppSubtitle = new Gtk.Label({
             label: '<span color="#888888">' + _('Per-screen and system idle timeout controls') + '</span>',
             use_markup: true,
             xalign: 0,
         });
-        titleBox.append(appTitle);
-        titleBox.append(appSubtitle);
-        bannerBox.append(titleBox);
-        bannerGroup.add(bannerBox);
-        generalPage.add(bannerGroup);
+        headerTitleBox.append(headerAppTitle);
+        headerTitleBox.append(headerAppSubtitle);
+        headerBannerBox.append(headerTitleBox);
+        headerGroup.add(headerBannerBox);
+        generalPage.add(headerGroup);
 
         // Group 1: Display Location
         const locationGroup = new Adw.PreferencesGroup({
@@ -202,7 +202,7 @@ export default class ScreenBlankDelayPreferences extends ExtensionPreferences {
 
         const aboutGroup = new Adw.PreferencesGroup();
 
-        const bannerBox = new Gtk.Box({
+        const aboutBannerBox = new Gtk.Box({
             orientation: Gtk.Orientation.VERTICAL,
             spacing: 12,
             margin_top: 24,
@@ -210,32 +210,32 @@ export default class ScreenBlankDelayPreferences extends ExtensionPreferences {
             halign: Gtk.Align.CENTER,
         });
 
-        const icon = new Gtk.Image({
+        const aboutIcon = new Gtk.Image({
             icon_name: 'preferences-desktop-screensaver-symbolic',
             pixel_size: 72,
         });
-        bannerBox.append(icon);
+        aboutBannerBox.append(aboutIcon);
 
-        const nameLabel = new Gtk.Label({
+        const aboutNameLabel = new Gtk.Label({
             label: '<span size="x-large" weight="bold">Screen Blank Delay</span>',
             use_markup: true,
         });
-        bannerBox.append(nameLabel);
+        aboutBannerBox.append(aboutNameLabel);
 
-        const versionLabel = new Gtk.Label({
+        const aboutVersionLabel = new Gtk.Label({
             label: '<span color="#888888">Version 1.0.0</span>',
             use_markup: true,
         });
-        bannerBox.append(versionLabel);
+        aboutBannerBox.append(aboutVersionLabel);
 
-        const descLabel = new Gtk.Label({
+        const aboutDescLabel = new Gtk.Label({
             label: _('Control screen blank delay quickly from Quick Settings or Top Bar,\nwith multi-monitor and per-display delay support.'),
             justify: Gtk.Justification.CENTER,
             margin_top: 6,
         });
-        bannerBox.append(descLabel);
+        aboutBannerBox.append(aboutDescLabel);
 
-        aboutGroup.add(bannerBox);
+        aboutGroup.add(aboutBannerBox);
 
         const linksGroup = new Adw.PreferencesGroup({
             title: _('Links and Project'),
