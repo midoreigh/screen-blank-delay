@@ -5,6 +5,9 @@
 
   [![GNOME Shell 45-50](https://img.shields.io/badge/GNOME%20Shell-45%20%7C%2046%20%7C%2047%20%7C%2048%20%7C%2049%20%7C%2050-blue.svg)](https://extensions.gnome.org)
   [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+  <br/><br/>
+  <img src="screenshots/screenshot_studio_5_overview_hero.png" width="90%" alt="Screen Blank Delay Preview" />
 </div>
 
 A powerful, elegant GNOME Shell extension that lets you quickly select and customize your screen blank delay directly from the **Quick Settings menu** or the **Top Bar panel**, with independent **multi-monitor delay support**.
@@ -22,6 +25,18 @@ A powerful, elegant GNOME Shell extension that lets you quickly select and custo
 - ⏱️ **Blank Now Action**: Instant "Blank Screen Now" for individual monitors or all screens.
 - ⚙️ **Synchronized with GNOME Settings**: Changes are bidirectional and stay perfectly in sync with GNOME's built-in Power settings (`org.gnome.desktop.session idle-delay`).
 - 🌐 **Modern & Standard Compliant**: Built strictly following GNOME Extensions review guidelines with ESM modules, Libadwaita preferences, GSettings schemas, and clean lifecycle cleanup.
+
+---
+
+## 📸 Screenshots
+
+| Quick Settings Menu | Top Bar Indicator Menu |
+| :---: | :---: |
+| ![Quick Settings](screenshots/screenshot_studio_1_quick_settings.png) | ![Top Bar Menu](screenshots/screenshot_studio_2_top_bar_menu.png) |
+
+| General Preferences | Multi-Monitor / Per-Screen Settings |
+| :---: | :---: |
+| ![General Preferences](screenshots/screenshot_studio_3_preferences_general.png) | ![Per-Screen Settings](screenshots/screenshot_studio_4_preferences_perscreen.png) |
 
 ---
 
