@@ -251,6 +251,7 @@ class MonitorBlankManager {
         this._timerId = 0;
         this._pointerWatchTimerId = 0;
         this._lastPointer = {x: -1, y: -1};
+        this._lastBlankAllTime = 0;
 
         this._wakeOnPointerMove = this._settings.get_boolean('wake-on-pointer-move');
         this._fadeAnimation = this._settings.get_boolean('fade-animation');
@@ -490,13 +491,44 @@ class MonitorBlankManager {
         this._extension.syncUI();
     }
 
+    _setPowerSaveMode(mode) {
+        try {
+            Gio.DBus.session.call(
+                'org.gnome.Mutter.DisplayConfig',
+                '/org/gnome/Mutter/DisplayConfig',
+                'org.freedesktop.DBus.Properties',
+                'Set',
+                new GLib.Variant('(ssv)', [
+                    'org.gnome.Mutter.DisplayConfig',
+                    'PowerSaveMode',
+                    new GLib.Variant('i', mode),
+                ]),
+                null,
+                Gio.DBusCallFlags.NONE,
+                -1,
+                null,
+                null
+            );
+        } catch {
+            // Mutter display config not available or unsupported
+        }
+    }
+
     blankMonitorNow(connector) {
         const mon = this._monitors.get(connector);
-        if (mon && !mon.isOverlayBlanked)
+        if (mon && !mon.isOverlayBlanked) {
+            this._lastBlankAllTime = GLib.get_monotonic_time();
             this._blankMonitor(mon);
+        }
     }
 
     blankAllNow() {
+        this._lastBlankAllTime = GLib.get_monotonic_time();
+
+        // 1. Physically turn off displays via Mutter DPMS
+        this._setPowerSaveMode(3); // META_POWER_SAVE_OFF
+
+        // 2. Also deploy black overlays to all monitors
         for (const mon of this._monitors.values()) {
             if (!mon.isOverlayBlanked)
                 this._blankMonitor(mon);
@@ -510,6 +542,7 @@ class MonitorBlankManager {
 
         mon.isOverlayBlanked = false;
         mon.lastActivityTime = GLib.get_monotonic_time() / 1000000;
+        this._setPowerSaveMode(0); // META_POWER_SAVE_ON
 
         if (mon.overlayActor) {
             const actor = mon.overlayActor;
@@ -534,9 +567,9 @@ class MonitorBlankManager {
 
         mon.isOverlayBlanked = true;
 
-        const overlay = new Clutter.Actor({
+        const overlay = new St.Widget({
             reactive: true,
-            background_color: new Clutter.Color({red: 0, green: 0, blue: 0, alpha: 255}),
+            style: 'background-color: #000000;',
             opacity: this._fadeAnimation ? 0 : 255,
         });
 
@@ -545,22 +578,32 @@ class MonitorBlankManager {
         overlay.set_name(`screen-blank-overlay-${mon.connector}`);
 
         overlay.connect('button-press-event', () => {
+            const now = GLib.get_monotonic_time();
+            if (this._lastBlankAllTime && now - this._lastBlankAllTime < 1000000)
+                return Clutter.EVENT_STOP;
             this.unblankMonitor(mon.connector);
             return Clutter.EVENT_STOP;
         });
 
         overlay.connect('scroll-event', () => {
+            const now = GLib.get_monotonic_time();
+            if (this._lastBlankAllTime && now - this._lastBlankAllTime < 1000000)
+                return Clutter.EVENT_STOP;
             this.unblankMonitor(mon.connector);
             return Clutter.EVENT_STOP;
         });
 
         overlay.connect('motion-event', () => {
+            const now = GLib.get_monotonic_time();
+            if (this._lastBlankAllTime && now - this._lastBlankAllTime < 1500000)
+                return Clutter.EVENT_PROPAGATE;
             if (this._wakeOnPointerMove)
                 this.unblankMonitor(mon.connector);
             return Clutter.EVENT_PROPAGATE;
         });
 
         Main.uiGroup.add_child(overlay);
+        Main.uiGroup.set_child_above_sibling(overlay, null);
         mon.overlayActor = overlay;
 
         if (this._fadeAnimation) {
@@ -574,6 +617,7 @@ class MonitorBlankManager {
     }
 
     _clearAllOverlays() {
+        this._setPowerSaveMode(0);
         for (const mon of this._monitors.values()) {
             mon.isOverlayBlanked = false;
             if (mon.overlayActor) {
@@ -600,13 +644,19 @@ class MonitorBlankManager {
 
     _checkPointerPosition() {
         const [x, y] = global.get_pointer();
-        if (x === this._lastPointer.x && y === this._lastPointer.y)
+        const dx = Math.abs(x - this._lastPointer.x);
+        const dy = Math.abs(y - this._lastPointer.y);
+        if (dx < 6 && dy < 6)
             return;
 
         this._lastPointer.x = x;
         this._lastPointer.y = y;
 
         const now = GLib.get_monotonic_time() / 1000000;
+        const nowMicro = GLib.get_monotonic_time();
+
+        if (this._lastBlankAllTime && nowMicro - this._lastBlankAllTime < 1500000)
+            return;
 
         for (const mon of this._monitors.values()) {
             const g = mon.geometry;
