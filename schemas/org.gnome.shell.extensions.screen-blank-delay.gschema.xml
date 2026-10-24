@@ -11,6 +11,11 @@
       <summary>Show in Top Bar</summary>
       <description>Display an indicator in the GNOME Shell top panel</description>
     </key>
+    <key name="top-bar-display-style" type="s">
+      <default>'compact'</default>
+      <summary>Top Bar Display Style</summary>
+      <description>Display style for the top bar indicator: 'compact' (e.g. 10m), 'full' (e.g. 10 min), or 'icon-only'</description>
+    </key>
     <key name="per-monitor-enabled" type="b">
       <default>true</default>
       <summary>Enable per-monitor delays</summary>

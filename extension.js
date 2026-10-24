@@ -3,6 +3,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Meta from 'gi://Meta';
+import Pango from 'gi://Pango';
 import St from 'gi://St';
 
 import {Extension, gettext} from 'resource:///org/gnome/shell/extensions/extension.js';
@@ -222,6 +223,17 @@ function formatDelay(seconds) {
     }
     const mins = Math.floor(seconds / 60);
     return mins === 1 ? _('1 min') : `${mins} min`;
+}
+
+function formatDelayCompact(seconds) {
+    if (seconds === 0)
+        return _('Never');
+    if (seconds < 60)
+        return `${seconds}s`;
+    if (seconds % 3600 === 0)
+        return `${seconds / 3600}h`;
+    const mins = Math.round(seconds / 60);
+    return `${mins}m`;
 }
 
 /**
@@ -929,8 +941,13 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
             text: '',
             y_align: Clutter.ActorAlign.CENTER,
         });
+        this._label.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
         box.add_child(this._label);
         this.add_child(box);
+
+        this._styleSignalId = this._extSettings.connect('changed::top-bar-display-style', () => {
+            this.sync();
+        });
 
         this.sync();
     }
@@ -1029,11 +1046,35 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
 
     sync() {
         const currentDelay = this._sessionSettings.get_uint('idle-delay');
-        const delayStr = currentDelay === 0 ? _('Never') : formatDelay(currentDelay);
-        this._label.text = ` ${delayStr}`;
-        this._icon.icon_name = currentDelay === 0 ? 'display-symbolic' : 'preferences-desktop-screensaver-symbolic';
+        const style = this._extSettings.get_string('top-bar-display-style');
+
+        this._icon.icon_name = currentDelay === 0
+            ? 'display-symbolic'
+            : 'preferences-desktop-screensaver-symbolic';
+
+        if (style === 'icon-only') {
+            this._label.text = '';
+            this._label.visible = false;
+        } else if (style === 'full') {
+            const delayStr = currentDelay === 0 ? _('Never') : formatDelay(currentDelay);
+            this._label.text = delayStr;
+            this._label.visible = true;
+        } else {
+            // Default: 'compact' (e.g. 10m, 1h, Never)
+            const delayStr = currentDelay === 0 ? _('Never') : formatDelayCompact(currentDelay);
+            this._label.text = delayStr;
+            this._label.visible = true;
+        }
 
         this._buildMenu();
+    }
+
+    destroy() {
+        if (this._styleSignalId) {
+            this._extSettings.disconnect(this._styleSignalId);
+            this._styleSignalId = 0;
+        }
+        super.destroy();
     }
 });
 

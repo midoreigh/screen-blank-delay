@@ -99,6 +99,25 @@ export default class ScreenBlankDelayPreferences extends ExtensionPreferences {
         settings.bind('show-in-top-bar', tbRow, 'active', Gio.SettingsBindFlags.DEFAULT);
         locationGroup.add(tbRow);
 
+        const styleRow = new Adw.ComboRow({
+            title: _('Top Bar Display Style'),
+            subtitle: _('Choose how the indicator appears in the top panel'),
+        });
+        const styleModel = new Gtk.StringList();
+        styleModel.append(_('Icon and Compact Delay (e.g. 10m)'));
+        styleModel.append(_('Icon and Full Delay (e.g. 10 min)'));
+        styleModel.append(_('Icon Only'));
+        styleRow.model = styleModel;
+
+        const currentStyle = settings.get_string('top-bar-display-style');
+        styleRow.selected = currentStyle === 'icon-only' ? 2 : (currentStyle === 'full' ? 1 : 0);
+
+        styleRow.connect('notify::selected', () => {
+            const styles = ['compact', 'full', 'icon-only'];
+            settings.set_string('top-bar-display-style', styles[styleRow.selected] || 'compact');
+        });
+        locationGroup.add(styleRow);
+
         const qsRow = new Adw.SwitchRow({
             title: _('Show in Quick Settings Menu (Optional)'),
             subtitle: _('Display toggle and submenu in GNOME Quick Settings'),
