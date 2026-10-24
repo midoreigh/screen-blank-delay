@@ -703,23 +703,6 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
 
         this.connect('clicked', () => this._onToggleClicked());
 
-        // Settings gear button directly on the Quick Settings tile
-        this._tileSettingsBtn = new St.Button({
-            style_class: 'quick-toggle-menu-button icon-button screen-blank-tile-btn',
-            child: new St.Icon({
-                icon_name: 'emblem-system-symbolic',
-                icon_size: 14,
-            }),
-            can_focus: true,
-            accessible_name: _('Screen Blank Settings'),
-            y_align: Clutter.ActorAlign.CENTER,
-        });
-        this._tileSettingsBtn.connect('clicked', () => {
-            this._extension.openPreferences();
-            Main.panel.closeQuickSettings();
-        });
-        this._box.insert_child_at_index(this._tileSettingsBtn, 1);
-
         // Header
         this.menu.setHeader(
             'preferences-desktop-screensaver-symbolic',
@@ -877,10 +860,6 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
     }
 
     destroy() {
-        if (this._tileSettingsBtn) {
-            this._tileSettingsBtn.destroy();
-            this._tileSettingsBtn = null;
-        }
         if (this._headerSettingsBtn) {
             this._headerSettingsBtn.destroy();
             this._headerSettingsBtn = null;

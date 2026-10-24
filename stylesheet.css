@@ -12,16 +12,6 @@
     margin-left: 8px;
 }
 
-.screen-blank-tile-btn {
-    padding: 0 8px !important;
-    min-width: 28px;
-    border-radius: 9999px;
-}
-
-.screen-blank-tile-btn:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-}
-
 /* Tile Grid for Delay Options */
 .screen-blank-delay-grid-container {
     padding: 4px 8px;
