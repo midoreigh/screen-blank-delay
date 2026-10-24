@@ -43,6 +43,11 @@ export default class ScreenBlankDelayPreferences extends ExtensionPreferences {
         if (typeof window.set_icon_name === 'function')
             window.set_icon_name('preferences-desktop-screensaver-symbolic');
 
+        const basePath = this.path ?? this.dir?.get_path?.();
+        const iconFile = basePath ? Gio.File.new_for_path(GLib.build_filenamev([basePath, 'icon.png'])) : null;
+        const iconExists = iconFile && iconFile.query_exists(null);
+        const customIconPath = iconExists ? iconFile.get_path() : null;
+
         // ================= PAGE 1: GENERAL =================
         const generalPage = new Adw.PreferencesPage({
             title: _('General'),
@@ -59,10 +64,12 @@ export default class ScreenBlankDelayPreferences extends ExtensionPreferences {
             halign: Gtk.Align.CENTER,
         });
 
-        const headerAppIcon = new Gtk.Image({
-            icon_name: 'preferences-desktop-screensaver-symbolic',
-            pixel_size: 48,
-        });
+        const headerAppIcon = customIconPath
+            ? Gtk.Image.new_from_file(customIconPath)
+            : new Gtk.Image({
+                icon_name: 'preferences-desktop-screensaver-symbolic',
+            });
+        headerAppIcon.pixel_size = 48;
         headerBannerBox.append(headerAppIcon);
 
         const headerTitleBox = new Gtk.Box({
@@ -229,10 +236,12 @@ export default class ScreenBlankDelayPreferences extends ExtensionPreferences {
             halign: Gtk.Align.CENTER,
         });
 
-        const aboutIcon = new Gtk.Image({
-            icon_name: 'preferences-desktop-screensaver-symbolic',
-            pixel_size: 72,
-        });
+        const aboutIcon = customIconPath
+            ? Gtk.Image.new_from_file(customIconPath)
+            : new Gtk.Image({
+                icon_name: 'preferences-desktop-screensaver-symbolic',
+            });
+        aboutIcon.pixel_size = 72;
         aboutBannerBox.append(aboutIcon);
 
         const aboutNameLabel = new Gtk.Label({

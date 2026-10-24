@@ -1,7 +1,11 @@
-# Screen Blank Delay (GNOME Shell Extension)
+<div align="center">
+  <img src="icon.svg" width="128" height="128" alt="Screen Blank Delay Icon" />
+  <h1>Screen Blank Delay</h1>
+  <p><strong>Quickly select and customize screen blank delay from GNOME Shell Quick Settings or Top Bar, with per-monitor timeout support.</strong></p>
 
-[![GNOME Shell 45-50](https://img.shields.io/badge/GNOME%20Shell-45%20%7C%2046%20%7C%2047%20%7C%2048%20%7C%2049%20%7C%2050-blue.svg)](https://extensions.gnome.org)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+  [![GNOME Shell 45-50](https://img.shields.io/badge/GNOME%20Shell-45%20%7C%2046%20%7C%2047%20%7C%2048%20%7C%2049%20%7C%2050-blue.svg)](https://extensions.gnome.org)
+  [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+</div>
 
 A powerful, elegant GNOME Shell extension that lets you quickly select and customize your screen blank delay directly from the **Quick Settings menu** or the **Top Bar panel**, with independent **multi-monitor delay support**.
 

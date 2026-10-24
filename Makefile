@@ -15,13 +15,15 @@ schemas:
 package: schemas
 	gnome-extensions pack --force \
 		--extra-source=stylesheet.css \
+		--extra-source=icon.svg \
+		--extra-source=icon.png \
 		--schema=$(SCHEMAS_DIR)/org.gnome.shell.extensions.screen-blank-delay.gschema.xml \
 		.
 
 install: schemas
 	rm -rf "$(INSTALL_DIR)"
 	mkdir -p "$(INSTALL_DIR)"
-	cp -r metadata.json extension.js prefs.js stylesheet.css reload.js schemas po LICENSE README.md "$(INSTALL_DIR)/"
+	cp -r metadata.json extension.js prefs.js stylesheet.css reload.js icon.svg icon.png schemas po LICENSE README.md "$(INSTALL_DIR)/"
 	glib-compile-schemas "$(INSTALL_DIR)/schemas"
 	@echo "Installed $(UUID) to $(INSTALL_DIR)"
 

@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- Drop shadow for the monitor -->
+    <filter id="monitor-shadow" x="-15%" y="-15%" width="130%" height="135%">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#050810" flood-opacity="0.5"/>
+    </filter>
+
+    <!-- Base drop shadow -->
+    <filter id="base-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+
+    <!-- Warm moon glow -->
+    <filter id="moon-glow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#f6d32d" flood-opacity="0.5"/>
+    </filter>
+
+    <!-- Cyan/Blue Arc Glow -->
+    <filter id="arc-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="1.8" flood-color="#3584e4" flood-opacity="0.6"/>
+    </filter>
+
+    <!-- Bezel Gradients -->
+    <linearGradient id="bezel-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#383f4d"/>
+      <stop offset="50%" stop-color="#282d37"/>
+      <stop offset="100%" stop-color="#1b1e25"/>
+    </linearGradient>
+
+    <linearGradient id="bezel-highlight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5d687c" stop-opacity="0.8"/>
+      <stop offset="30%" stop-color="#383f4d" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#121419" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <!-- Stand Gradients -->
+    <linearGradient id="stem-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#222630"/>
+      <stop offset="40%" stop-color="#363c4a"/>
+      <stop offset="80%" stop-color="#242833"/>
+      <stop offset="100%" stop-color="#181a22"/>
+    </linearGradient>
+
+    <linearGradient id="base-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#464f5f"/>
+      <stop offset="40%" stop-color="#303642"/>
+      <stop offset="100%" stop-color="#1e222a"/>
+    </linearGradient>
+
+    <!-- Screen Display Gradients -->
+    <linearGradient id="screen-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#131929"/>
+      <stop offset="50%" stop-color="#0d121e"/>
+      <stop offset="100%" stop-color="#080a11"/>
+    </linearGradient>
+
+    <radialGradient id="screen-glare" cx="20%" cy="10%" r="90%">
+      <stop offset="0%" stop-color="#3584e4" stop-opacity="0.22"/>
+      <stop offset="45%" stop-color="#1c71d8" stop-opacity="0.06"/>
+      <stop offset="80%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Moon Gradient -->
+    <linearGradient id="moon-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff085"/>
+      <stop offset="40%" stop-color="#f6d32d"/>
+      <stop offset="100%" stop-color="#e5a50a"/>
+    </linearGradient>
+
+    <!-- Delay Arc Gradient -->
+    <linearGradient id="arc-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1cd0c5"/>
+      <stop offset="50%" stop-color="#3584e4"/>
+      <stop offset="100%" stop-color="#78aeed"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Deep Ground Ambient Shadow -->
+  <ellipse cx="64" cy="116" rx="34" ry="4.5" fill="#000000" opacity="0.38"/>
+
+  <!-- Stand Stem -->
+  <path d="M57 84 L58.5 105 L69.5 105 L71 84 Z" fill="url(#stem-grad)"/>
+
+  <!-- Stand Base with Soft Shadow -->
+  <rect x="36" y="104" width="56" height="8" rx="4" fill="url(#base-grad)" filter="url(#base-shadow)"/>
+  <!-- Stand Base Top Highlight -->
+  <rect x="37" y="104.5" width="54" height="1.2" rx="0.6" fill="#728099" opacity="0.5"/>
+
+  <!-- Monitor Outer Body (Bezel) with Depth Drop Shadow -->
+  <rect x="13" y="13" width="102" height="73" rx="10" fill="url(#bezel-grad)" filter="url(#monitor-shadow)"/>
+
+  <!-- Bezel Inner Stroke / Tactile Edge Highlight -->
+  <rect x="13.5" y="13.5" width="101" height="72" rx="9.5" fill="none" stroke="url(#bezel-highlight)" stroke-width="1"/>
+
+  <!-- Screen Glass Bezel Inset -->
+  <rect x="18" y="18" width="92" height="58" rx="6" fill="#06080d"/>
+
+  <!-- Screen Display Surface -->
+  <rect x="19" y="19" width="90" height="56" rx="5" fill="url(#screen-grad)"/>
+
+  <!-- Subtle Ambient Screen Glare / Reflection -->
+  <rect x="19" y="19" width="90" height="56" rx="5" fill="url(#screen-glare)"/>
+
+  <!-- Inner Screen Subtle Vignette / Border -->
+  <rect x="19.5" y="19.5" width="89" height="55" rx="4.5" fill="none" stroke="#222c40" stroke-width="0.8" opacity="0.6"/>
+
+  <!-- ================= Screen Content ================= -->
+
+  <!-- Timer Gauge Background Inactive Track -->
+  <circle cx="64" cy="47" r="20" fill="none" stroke="#1c2538" stroke-width="3.2"/>
+
+  <!-- 4 Subdued Interval Quadrant Ticks (12, 3, 6, 9 o'clock) -->
+  <line x1="64" y1="23.5" x2="64" y2="25.5" stroke="#364561" stroke-width="1.4" stroke-linecap="round"/>
+  <line x1="85.5" y1="47" x2="87.5" y2="47" stroke="#364561" stroke-width="1.4" stroke-linecap="round"/>
+  <line x1="64" y1="68.5" x2="64" y2="70.5" stroke="#364561" stroke-width="1.4" stroke-linecap="round"/>
+  <line x1="40.5" y1="47" x2="42.5" y2="47" stroke="#364561" stroke-width="1.4" stroke-linecap="round"/>
+
+  <!-- Glowing Active Delay Countdown Arc (from 12 o'clock clockwise to 9 o'clock = 270 deg) -->
+  <path d="M 64 27 A 20 20 0 1 1 44 47" 
+        fill="none" 
+        stroke="url(#arc-grad)" 
+        stroke-width="3.4" 
+        stroke-linecap="round" 
+        filter="url(#arc-glow)"/>
+
+  <!-- Active Endpoint Indicator Knob / Bead -->
+  <circle cx="44" cy="47" r="3" fill="#ffffff" filter="url(#arc-glow)"/>
+  <circle cx="44" cy="47" r="1.6" fill="#1cd0c5"/>
+
+  <!-- Golden Crescent Moon (Screen Sleep / Blank symbol) -->
+  <g filter="url(#moon-glow)">
+    <path d="M 67 37 C 60.5 37 55.5 42 55.5 48 C 55.5 54 60.5 59 67 59 C 69.4 59 71.7 58.2 73.6 56.9 C 69.8 55.6 67 52.1 67 48 C 67 43.9 69.8 40.4 73.6 39.1 C 71.7 37.8 69.4 37 67 37 Z" 
+          fill="url(#moon-grad)"/>
+  </g>
+
+  <!-- Ambient Sparkling Night Stars -->
+  <!-- Top Right 4-Point Star -->
+  <path d="M 78 30.5 Q 78 32.5 76 32.5 Q 78 32.5 78 34.5 Q 78 32.5 80 32.5 Q 78 32.5 78 30.5 Z" fill="#ffffff" opacity="0.9"/>
+  <!-- Subtle accent dot stars -->
+  <circle cx="78" cy="55" r="1.1" fill="#ffe485" opacity="0.75"/>
+  <circle cx="49" cy="34" r="0.8" fill="#a4cbfa" opacity="0.7"/>
+
+  <!-- Delicate Sleep ZZZ / Drift Accent -->
+  <path d="M 72.5 42.5 L 75.5 42.5 L 72.5 45.5 L 75.5 45.5" fill="none" stroke="#ffd043" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+
+  <!-- Monitor Bottom Bezel Status LED -->
+  <circle cx="64" cy="80.5" r="1.2" fill="#3584e4"/>
+  <circle cx="64" cy="80.5" r="2.4" fill="#3584e4" opacity="0.3"/>
+</svg>
