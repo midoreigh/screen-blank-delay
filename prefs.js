@@ -4,7 +4,15 @@ import GLib from 'gi://GLib';
 import Gdk from 'gi://Gdk';
 import Gtk from 'gi://Gtk';
 
-import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import {ExtensionPreferences, gettext} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+
+function _(str) {
+    try {
+        return gettext(str);
+    } catch {
+        return str;
+    }
+}
 
 function getDelayOptions() {
     return [
@@ -97,7 +105,7 @@ export default class ScreenBlankDelayPreferences extends ExtensionPreferences {
 
         // Group 3: Behavior
         const behaviorGroup = new Adw.PreferencesGroup({
-            title: _('Behavior & Animation'),
+            title: _('Behavior and Animation'),
         });
 
         const wakeOnPointerRow = new Adw.SwitchRow({
@@ -190,7 +198,7 @@ export default class ScreenBlankDelayPreferences extends ExtensionPreferences {
         aboutGroup.add(bannerBox);
 
         const linksGroup = new Adw.PreferencesGroup({
-            title: _('Links & Project'),
+            title: _('Links and Project'),
         });
 
         const authorRow = new Adw.ActionRow({

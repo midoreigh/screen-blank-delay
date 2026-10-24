@@ -2,9 +2,12 @@ UUID = screen-blank-delay@midoreigh
 INSTALL_DIR = $(HOME)/.local/share/gnome-shell/extensions/$(UUID)
 SCHEMAS_DIR = schemas
 
-.PHONY: all schemas package install uninstall enable disable clean
+.PHONY: all schemas package install uninstall enable disable clean test-prefs
 
 all: schemas
+
+test-prefs: schemas
+	GI_TYPELIB_PATH=/usr/lib/gnome-shell/girepository-1.0:/usr/lib/x86_64-linux-gnu/mutter-18 ./scripts/run-prefs.js
 
 schemas:
 	glib-compile-schemas $(SCHEMAS_DIR)

@@ -167,7 +167,7 @@ msgid "Duration of inactivity before blanking displays"
 msgstr ""
 
 #: prefs.js:96
-msgid "Behavior & Animation"
+msgid "Behavior and Animation"
 msgstr ""
 
 #: prefs.js:100
@@ -223,7 +223,7 @@ msgid "Control screen blank delay quickly from Quick Settings or Top Bar,\nwith 
 msgstr ""
 
 #: prefs.js:183
-msgid "Links & Project"
+msgid "Links and Project"
 msgstr ""
 
 #: prefs.js:187
