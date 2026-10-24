@@ -973,19 +973,13 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-        const extSettingsItem = new PopupMenu.PopupImageMenuItem(
-            _('Screen Blank Settings…'),
-            'emblem-system-symbolic'
-        );
+        const extSettingsItem = new PopupMenu.PopupMenuItem(_('Screen Blank Settings…'));
         extSettingsItem.connect('activate', () => {
             this._extension.openPreferences();
         });
         this.menu.addMenuItem(extSettingsItem);
 
-        const powerSettingsItem = new PopupMenu.PopupImageMenuItem(
-            _('GNOME Power Settings…'),
-            'preferences-system-symbolic'
-        );
+        const powerSettingsItem = new PopupMenu.PopupMenuItem(_('GNOME Power Settings…'));
         powerSettingsItem.connect('activate', () => {
             try {
                 Gio.AppInfo.create_from_commandline('gnome-control-center power', null, Gio.AppInfoCreateFlags.NONE).launch([], null);
