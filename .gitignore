@@ -1,0 +1,12 @@
+# Compiled schemas
+schemas/gschemas.compiled
+
+# Packaged extension zip files
+*.zip
+*.tar.gz
+
+# Node / Scratch files
+.system_generated/
+*.log
+.DS_Store
+*~

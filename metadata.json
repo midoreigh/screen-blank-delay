@@ -1,0 +1,17 @@
+{
+  "name": "Screen Blank Delay",
+  "description": "Quickly select and customize screen blank delay from the Quick Settings menu or Top Bar, with per-screen delay support for multi-monitor setups.",
+  "uuid": "screen-blank-delay@midoreigh",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48",
+    "49",
+    "50"
+  ],
+  "url": "https://github.com/midoreigh/screen-blank-delay",
+  "settings-schema": "org.gnome.shell.extensions.screen-blank-delay",
+  "gettext-domain": "screen-blank-delay",
+  "version": 1
+}

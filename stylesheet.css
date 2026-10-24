@@ -1,0 +1,17 @@
+/* Stylesheet for Screen Blank Delay GNOME Extension */
+
+.screen-blank-monitor-title {
+    font-weight: bold;
+    padding-top: 6px;
+    padding-bottom: 2px;
+}
+
+.screen-blank-monitor-badge {
+    font-size: 0.85em;
+    color: #888888;
+    margin-left: 8px;
+}
+
+.screen-blank-action-button {
+    margin: 4px 6px;
+}

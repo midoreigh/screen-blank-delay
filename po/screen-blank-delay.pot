@@ -1,0 +1,251 @@
+# Translation template for Screen Blank Delay GNOME Extension.
+# Copyright (C) 2026 midoreigh
+# This file is distributed under the same license as the Screen Blank Delay package.
+# midoreigh <midoreigh@gmail.com>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: screen-blank-delay 1.0.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-24 20:30+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: extension.js:15 prefs.js:11
+msgid "1 minute"
+msgstr ""
+
+#: extension.js:16 prefs.js:12
+msgid "2 minutes"
+msgstr ""
+
+#: extension.js:17 prefs.js:13
+msgid "3 minutes"
+msgstr ""
+
+#: extension.js:18 prefs.js:14
+msgid "5 minutes"
+msgstr ""
+
+#: extension.js:19 prefs.js:15
+msgid "8 minutes"
+msgstr ""
+
+#: extension.js:20 prefs.js:16
+msgid "10 minutes"
+msgstr ""
+
+#: extension.js:21 prefs.js:17
+msgid "12 minutes"
+msgstr ""
+
+#: extension.js:22 prefs.js:18
+msgid "15 minutes"
+msgstr ""
+
+#: extension.js:23 prefs.js:19
+msgid "30 minutes"
+msgstr ""
+
+#: extension.js:24 prefs.js:20
+msgid "1 hour"
+msgstr ""
+
+#: extension.js:25 prefs.js:21
+msgid "Never"
+msgstr ""
+
+#: extension.js:34
+msgid "1 min"
+msgstr ""
+
+#: extension.js:182
+#, javascript-format
+msgid "Display %d"
+msgstr ""
+
+#: extension.js:372
+msgid "Screen Blank"
+msgstr ""
+
+#: extension.js:375
+msgid "Open screen blank menu"
+msgstr ""
+
+#: extension.js:386 extension.js:520 extension.js:538
+msgid "Screen Blank Delay"
+msgstr ""
+
+#: extension.js:387
+msgid "Configure idle timeouts"
+msgstr ""
+
+#: extension.js:416
+msgid "System Delay (All Screens)"
+msgstr ""
+
+#: extension.js:435 extension.js:556
+msgid "Per-Screen Delay"
+msgstr ""
+
+#: extension.js:439 extension.js:560
+msgid "(Primary)"
+msgstr ""
+
+#: extension.js:441 extension.js:449 extension.js:562 extension.js:570 prefs.js:10
+msgid "Follow System"
+msgstr ""
+
+#: extension.js:470 extension.js:591
+msgid "Wake Screen Now"
+msgstr ""
+
+#: extension.js:470 extension.js:591
+msgid "Blank This Screen Now"
+msgstr ""
+
+#: extension.js:485 extension.js:606
+msgid "Blank All Screens Now"
+msgstr ""
+
+#: extension.js:494 extension.js:614
+msgid "Power Settings…"
+msgstr ""
+
+#: extension.js:503 extension.js:623
+msgid "Extension Settings…"
+msgstr ""
+
+#: prefs.js:35
+msgid "General"
+msgstr ""
+
+#: prefs.js:41
+msgid "Menu Visibility"
+msgstr ""
+
+#: prefs.js:42
+msgid "Choose where Screen Blank Delay controls appear"
+msgstr ""
+
+#: prefs.js:46
+msgid "Show in Quick Settings Menu"
+msgstr ""
+
+#: prefs.js:47
+msgid "Display toggle and submenu in GNOME Quick Settings"
+msgstr ""
+
+#: prefs.js:53
+msgid "Show in Top Bar Panel"
+msgstr ""
+
+#: prefs.js:54
+msgid "Display an indicator icon with current delay on the top bar"
+msgstr ""
+
+#: prefs.js:62
+msgid "System Screen Blank Delay"
+msgstr ""
+
+#: prefs.js:63
+msgid "Global idle timeout for all displays (synchronized with GNOME Settings)"
+msgstr ""
+
+#: prefs.js:67
+msgid "Default Blank Delay"
+msgstr ""
+
+#: prefs.js:68
+msgid "Duration of inactivity before blanking displays"
+msgstr ""
+
+#: prefs.js:96
+msgid "Behavior & Animation"
+msgstr ""
+
+#: prefs.js:100
+msgid "Wake Screen on Pointer Movement"
+msgstr ""
+
+#: prefs.js:101
+msgid "Automatically wake a blanked screen when the mouse cursor enters it"
+msgstr ""
+
+#: prefs.js:107
+msgid "Smooth Fade Transition"
+msgstr ""
+
+#: prefs.js:108
+msgid "Fade screens smoothly when blanking or waking up"
+msgstr ""
+
+#: prefs.js:117
+msgid "Per-Screen"
+msgstr ""
+
+#: prefs.js:122
+msgid "Multi-Monitor Delay Configuration"
+msgstr ""
+
+#: prefs.js:123
+msgid "Configure custom idle blank delays for individual screens"
+msgstr ""
+
+#: prefs.js:127
+msgid "Enable Per-Screen Blank Delays"
+msgstr ""
+
+#: prefs.js:128
+msgid "Allow each display to blank independently after its own idle period"
+msgstr ""
+
+#: prefs.js:134 prefs.js:264
+msgid "Connected Displays"
+msgstr ""
+
+#: prefs.js:135
+msgid "Set blank timeout for each detected screen"
+msgstr ""
+
+#: prefs.js:143
+msgid "About"
+msgstr ""
+
+#: prefs.js:174
+msgid "Control screen blank delay quickly from Quick Settings or Top Bar,\nwith multi-monitor and per-display delay support."
+msgstr ""
+
+#: prefs.js:183
+msgid "Links & Project"
+msgstr ""
+
+#: prefs.js:187
+msgid "Author"
+msgstr ""
+
+#: prefs.js:193
+msgid "GitHub Repository"
+msgstr ""
+
+#: prefs.js:197
+msgid "Open"
+msgstr ""
+
+#: prefs.js:206
+msgid "License"
+msgstr ""
+
+#: prefs.js:220
+msgid "No connected displays detected"
+msgstr ""
+
+#: prefs.js:231
+msgid "Blank delay for this display"
+msgstr ""

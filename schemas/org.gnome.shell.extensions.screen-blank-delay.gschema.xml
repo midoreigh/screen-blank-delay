@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="screen-blank-delay">
+  <schema id="org.gnome.shell.extensions.screen-blank-delay" path="/org/gnome/shell/extensions/screen-blank-delay/">
+    <key name="show-in-quick-settings" type="b">
+      <default>true</default>
+      <summary>Show in Quick Settings</summary>
+      <description>Display the screen blank delay menu in GNOME Quick Settings</description>
+    </key>
+    <key name="show-in-top-bar" type="b">
+      <default>false</default>
+      <summary>Show in Top Bar</summary>
+      <description>Display an indicator in the GNOME Shell top panel</description>
+    </key>
+    <key name="per-monitor-enabled" type="b">
+      <default>true</default>
+      <summary>Enable per-monitor delays</summary>
+      <description>Allow configuring individual blank delays for each connected monitor</description>
+    </key>
+    <key name="per-monitor-delays" type="a{si}">
+      <default>{}</default>
+      <summary>Per-monitor blank delays</summary>
+      <description>Dictionary mapping monitor connector/name to delay in seconds (-1 for follow system, 0 for never)</description>
+    </key>
+    <key name="wake-on-pointer-move" type="b">
+      <default>true</default>
+      <summary>Wake on pointer movement</summary>
+      <description>Wake a blanked monitor as soon as the mouse cursor enters it</description>
+    </key>
+    <key name="fade-animation" type="b">
+      <default>true</default>
+      <summary>Smooth fade transition</summary>
+      <description>Fade screens smoothly when blanking or waking</description>
+    </key>
+    <key name="last-active-system-delay" type="u">
+      <default>600</default>
+      <summary>Last active system idle delay</summary>
+      <description>Saved idle delay in seconds before screen blank was set to Never</description>
+    </key>
+  </schema>
+</schemalist>
