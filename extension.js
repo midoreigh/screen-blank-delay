@@ -510,6 +510,23 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
             _('Configure idle timeouts')
         );
 
+        // Settings button in Quick Settings header
+        const headerPrefsBtn = new St.Button({
+            style_class: 'button',
+            child: new St.Icon({
+                icon_name: 'emblem-system-symbolic',
+                icon_size: 16,
+            }),
+            can_focus: true,
+            accessible_name: _('Screen Blank Settings'),
+        });
+        headerPrefsBtn.connect('clicked', () => {
+            this._extension.openPreferences();
+            Main.panel.closeQuickSettings();
+        });
+        if (typeof this.menu.addHeaderSuffix === 'function')
+            this.menu.addHeaderSuffix(headerPrefsBtn);
+
         this._buildMenu();
         this.sync();
     }
@@ -622,7 +639,21 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         // Preferences & System Power Settings
-        this.menu.addAction(_('Power Settings…'), () => {
+        const extSettingsItem = new PopupMenu.PopupImageMenuItem(
+            _('Screen Blank Settings…'),
+            'emblem-system-symbolic'
+        );
+        extSettingsItem.connect('activate', () => {
+            this._extension.openPreferences();
+            Main.panel.closeQuickSettings();
+        });
+        this.menu.addMenuItem(extSettingsItem);
+
+        const powerSettingsItem = new PopupMenu.PopupImageMenuItem(
+            _('GNOME Power Settings…'),
+            'preferences-system-symbolic'
+        );
+        powerSettingsItem.connect('activate', () => {
             try {
                 Gio.AppInfo.create_from_commandline('gnome-control-center power', null, Gio.AppInfoCreateFlags.NONE).launch([], null);
             } catch (e) {
@@ -630,11 +661,7 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
             }
             Main.panel.closeQuickSettings();
         });
-
-        this.menu.addAction(_('Extension Settings…'), () => {
-            this._extension.openPreferences();
-            Main.panel.closeQuickSettings();
-        });
+        this.menu.addMenuItem(powerSettingsItem);
     }
 
     sync() {
@@ -803,17 +830,27 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-        this.menu.addAction(_('Power Settings…'), () => {
+        const extSettingsItem = new PopupMenu.PopupImageMenuItem(
+            _('Screen Blank Settings…'),
+            'emblem-system-symbolic'
+        );
+        extSettingsItem.connect('activate', () => {
+            this._extension.openPreferences();
+        });
+        this.menu.addMenuItem(extSettingsItem);
+
+        const powerSettingsItem = new PopupMenu.PopupImageMenuItem(
+            _('GNOME Power Settings…'),
+            'preferences-system-symbolic'
+        );
+        powerSettingsItem.connect('activate', () => {
             try {
                 Gio.AppInfo.create_from_commandline('gnome-control-center power', null, Gio.AppInfoCreateFlags.NONE).launch([], null);
             } catch (e) {
                 // fallback
             }
         });
-
-        this.menu.addAction(_('Extension Settings…'), () => {
-            this._extension.openPreferences();
-        });
+        this.menu.addMenuItem(powerSettingsItem);
     }
 
     sync() {
@@ -886,6 +923,22 @@ export default class ScreenBlankDelayExtension extends Extension {
             this._indicator.sync();
         if (this._topBarButton)
             this._topBarButton.sync();
+    }
+
+    openPreferences() {
+        let opened = false;
+        try {
+            opened = Main.extensionManager.openExtensionPrefs(this.uuid, '', {});
+        } catch (e) {
+            log(`[ScreenBlankDelay] openExtensionPrefs failed: ${e.message}`);
+        }
+        if (!opened) {
+            try {
+                Gio.Subprocess.new(['gnome-extensions', 'prefs', this.uuid], Gio.SubprocessFlags.NONE);
+            } catch (err) {
+                log(`[ScreenBlankDelay] Failed to launch prefs via subprocess: ${err.message}`);
+            }
+        }
     }
 
     disable() {

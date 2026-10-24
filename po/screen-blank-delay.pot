@@ -114,6 +114,14 @@ msgstr ""
 msgid "Blank All Screens Now"
 msgstr ""
 
+#: extension.js:632 extension.js:824
+msgid "Screen Blank Settings…"
+msgstr ""
+
+#: extension.js:642 extension.js:834
+msgid "GNOME Power Settings…"
+msgstr ""
+
 #: extension.js:494 extension.js:614
 msgid "Power Settings…"
 msgstr ""
