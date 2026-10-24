@@ -301,8 +301,14 @@ class MonitorBlankManager {
 
     _onUserActive() {
         const now = GLib.get_monotonic_time() / 1000000;
+        const nowMicro = GLib.get_monotonic_time();
+        if (this._lastBlankAllTime && nowMicro - this._lastBlankAllTime < 1000000)
+            return;
+
         for (const info of this._monitors.values()) {
             info.lastActivityTime = now;
+            if (info.isOverlayBlanked)
+                this.unblankMonitor(info.connector);
         }
         // re-register active watch
         this._activeWatchId = 0;
@@ -491,29 +497,6 @@ class MonitorBlankManager {
         this._extension.syncUI();
     }
 
-    _setPowerSaveMode(mode) {
-        try {
-            Gio.DBus.session.call(
-                'org.gnome.Mutter.DisplayConfig',
-                '/org/gnome/Mutter/DisplayConfig',
-                'org.freedesktop.DBus.Properties',
-                'Set',
-                new GLib.Variant('(ssv)', [
-                    'org.gnome.Mutter.DisplayConfig',
-                    'PowerSaveMode',
-                    new GLib.Variant('i', mode),
-                ]),
-                null,
-                Gio.DBusCallFlags.NONE,
-                -1,
-                null,
-                null
-            );
-        } catch {
-            // Mutter display config not available or unsupported
-        }
-    }
-
     blankMonitorNow(connector) {
         const mon = this._monitors.get(connector);
         if (mon && !mon.isOverlayBlanked) {
@@ -525,10 +508,6 @@ class MonitorBlankManager {
     blankAllNow() {
         this._lastBlankAllTime = GLib.get_monotonic_time();
 
-        // 1. Physically turn off displays via Mutter DPMS
-        this._setPowerSaveMode(3); // META_POWER_SAVE_OFF
-
-        // 2. Also deploy black overlays to all monitors
         for (const mon of this._monitors.values()) {
             if (!mon.isOverlayBlanked)
                 this._blankMonitor(mon);
@@ -542,7 +521,6 @@ class MonitorBlankManager {
 
         mon.isOverlayBlanked = false;
         mon.lastActivityTime = GLib.get_monotonic_time() / 1000000;
-        this._setPowerSaveMode(0); // META_POWER_SAVE_ON
 
         if (mon.overlayActor) {
             const actor = mon.overlayActor;
@@ -550,7 +528,7 @@ class MonitorBlankManager {
             if (this._fadeAnimation) {
                 actor.ease({
                     opacity: 0,
-                    duration: 250,
+                    duration: 500,
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     onComplete: () => actor.destroy(),
                 });
@@ -569,6 +547,7 @@ class MonitorBlankManager {
 
         const overlay = new St.Widget({
             reactive: true,
+            can_focus: true,
             style: 'background-color: #000000;',
             opacity: this._fadeAnimation ? 0 : 255,
         });
@@ -602,14 +581,23 @@ class MonitorBlankManager {
             return Clutter.EVENT_PROPAGATE;
         });
 
+        overlay.connect('key-press-event', () => {
+            const now = GLib.get_monotonic_time();
+            if (this._lastBlankAllTime && now - this._lastBlankAllTime < 1000000)
+                return Clutter.EVENT_STOP;
+            this.unblankMonitor(mon.connector);
+            return Clutter.EVENT_STOP;
+        });
+
         Main.uiGroup.add_child(overlay);
         Main.uiGroup.set_child_above_sibling(overlay, null);
+        overlay.grab_key_focus();
         mon.overlayActor = overlay;
 
         if (this._fadeAnimation) {
             overlay.ease({
                 opacity: 255,
-                duration: 350,
+                duration: 600,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
             });
         }
@@ -617,7 +605,6 @@ class MonitorBlankManager {
     }
 
     _clearAllOverlays() {
-        this._setPowerSaveMode(0);
         for (const mon of this._monitors.values()) {
             mon.isOverlayBlanked = false;
             if (mon.overlayActor) {
@@ -869,6 +856,7 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
 
         const blankAllItem = new PopupMenu.PopupMenuItem(_('Blank All Screens Now'));
         blankAllItem.connect('activate', () => {
+            this.menu.close();
             this._extension.blankManager.blankAllNow();
         });
         this.menu.addMenuItem(blankAllItem);
@@ -1035,6 +1023,7 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         const blankAllItem = new PopupMenu.PopupMenuItem(_('Blank All Screens Now'));
         blankAllItem.connect('activate', () => {
+            this.menu.close();
             this._extension.blankManager.blankAllNow();
         });
         this.menu.addMenuItem(blankAllItem);
