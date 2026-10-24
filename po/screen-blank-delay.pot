@@ -1,7 +1,7 @@
 # Translation template for Screen Blank Delay GNOME Extension.
 # Copyright (C) 2026 midoreigh
 # This file is distributed under the same license as the Screen Blank Delay package.
-# midoreigh <midoreigh@gmail.com>, 2026.
+# midoreigh <contact@midoreigh.com>, 2026.
 #
 #, fuzzy
 msgid ""

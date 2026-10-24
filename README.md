@@ -137,5 +137,5 @@ This project is licensed under the **GNU General Public License v3.0** (GPL-3.0)
 
 ## 👤 Author
 
-Developed by **midoreigh** (<midoreigh@gmail.com>).
+Developed by **midoreigh** (<contact@midoreigh.com>).
 Contributions, bug reports, and suggestions are welcome via GitHub Issues and Pull Requests!
