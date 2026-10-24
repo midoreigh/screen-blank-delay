@@ -13,5 +13,5 @@
   "url": "https://github.com/midoreigh/screen-blank-delay",
   "settings-schema": "org.gnome.shell.extensions.screen-blank-delay",
   "gettext-domain": "screen-blank-delay",
-  "version": 1
+  "version": 2
 }
