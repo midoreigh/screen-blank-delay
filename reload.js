@@ -43,7 +43,11 @@ export async function reload() {
 
         return 'RELOAD_SUCCESS';
     } catch (e) {
-        return `RELOAD_FAILED: ${e.message}\n${e.stack}`;
+        const errMsg = `RELOAD_FAILED: ${e.message}\n${e.stack}`;
+        try {
+            GLib.file_set_contents('/tmp/reload_error.log', errMsg);
+        } catch (_) {}
+        return errMsg;
     }
 }
 
