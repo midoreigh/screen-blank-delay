@@ -9,6 +9,7 @@ jobs:
   build-and-upload:
     name: Build and Attach Release Asset
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: write
 
@@ -19,7 +20,10 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libglib2.0-bin gnome-shell gettext
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            libglib2.0-bin \
+            gnome-shell \
+            gettext
 
       - name: Set up Python
         uses: actions/setup-python@v5

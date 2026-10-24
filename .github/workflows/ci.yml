@@ -14,6 +14,7 @@ jobs:
   lint-and-build:
     name: Lint and Build Extension
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Checkout repository
@@ -22,7 +23,10 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libglib2.0-bin gnome-shell gettext
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            libglib2.0-bin \
+            gnome-shell \
+            gettext
 
       - name: Set up Python
         uses: actions/setup-python@v5
