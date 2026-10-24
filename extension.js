@@ -817,33 +817,6 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
             this._extension.blankManager.blankAllNow();
         });
         this.menu.addMenuItem(blankAllItem);
-
-        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-        // Preferences & System Power Settings
-        const extSettingsItem = new PopupMenu.PopupImageMenuItem(
-            _('Screen Blank Settings…'),
-            'emblem-system-symbolic'
-        );
-        extSettingsItem.connect('activate', () => {
-            this._extension.openPreferences();
-            Main.panel.closeQuickSettings();
-        });
-        this.menu.addMenuItem(extSettingsItem);
-
-        const powerSettingsItem = new PopupMenu.PopupImageMenuItem(
-            _('GNOME Power Settings…'),
-            'preferences-system-symbolic'
-        );
-        powerSettingsItem.connect('activate', () => {
-            try {
-                Gio.AppInfo.create_from_commandline('gnome-control-center power', null, Gio.AppInfoCreateFlags.NONE).launch([], null);
-            } catch (e) {
-                // fallback
-            }
-            Main.panel.closeQuickSettings();
-        });
-        this.menu.addMenuItem(powerSettingsItem);
     }
 
     sync() {
