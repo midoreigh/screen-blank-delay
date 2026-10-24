@@ -15,21 +15,22 @@ A powerful, elegant GNOME Shell extension that lets you quickly select and custo
 
 ---
 
-## ✨ Features
+## Features
 
-- ⚡ **Quick Settings Integration**: Easily change idle screen blank delay directly from the modern GNOME Quick Settings menu.
-- 🕒 **One-Click Awake / Sleep Toggle**: Click the quick toggle button to instantly switch between keeping your screen awake (*Never*) and your preferred timeout.
-- 🖥️ **Per-Monitor / Multi-Screen Delay Support**: Set individual blank timeouts for each connected monitor (e.g., have your secondary monitor blank after 3 minutes while keeping your main monitor on for 15 minutes).
-- 🖱️ **Smart Pointer Wakeup**: Blanked secondary monitors wake up instantly as soon as your mouse cursor moves over them.
-- 🎨 **Smooth Fade Transitions**: OLED and eye-friendly smooth fade transitions when blanking or waking displays.
-- 📍 **Top Bar Indicator Option**: Choose whether to display in Quick Settings, Top Bar, or both.
-- ⏱️ **Blank Now Action**: Instant "Blank Screen Now" for individual monitors or all screens.
-- ⚙️ **Synchronized with GNOME Settings**: Changes are bidirectional and stay perfectly in sync with GNOME's built-in Power settings (`org.gnome.desktop.session idle-delay`).
-- 🌐 **Modern & Standard Compliant**: Built strictly following GNOME Extensions review guidelines with ESM modules, Libadwaita preferences, GSettings schemas, and clean lifecycle cleanup.
+- **Quick Settings Integration**: Easily change idle screen blank delay directly from the modern GNOME Quick Settings menu.
+- **One-Click Delay Switching**: Instant preset grid to choose from common timeouts (1m, 2m, 3m, 5m, 8m, 10m, 12m, 15m, 30m, 1h, Never).
+- **Blank All Screens Now**: One-click action to immediately blank all connected displays on-demand without waiting for idle timeout or locking the desktop.
+- **Per-Monitor Blank Delays**: Configure independent idle blank timeouts for each connected monitor (e.g. blank a secondary display after 3 minutes while keeping the primary screen on).
+- **Per-Display Blank Controls**: Instant "Blank This Screen Now" / "Wake Screen Now" toggles for individual monitors from their submenus.
+- **Smart Pointer Wakeup**: Blanked displays wake up automatically as soon as the mouse cursor enters their screen area.
+- **Smooth Fade Transitions**: Eye-friendly smooth fade transitions when blanking or waking displays.
+- **Top Bar Panel Indicator**: Optional indicator icon and current delay display in the GNOME top panel.
+- **Synchronized with GNOME Settings**: Fully bidirectional synchronization with GNOME's built-in Power settings (`org.gnome.desktop.session idle-delay`).
+- **Modern & Standards Compliant**: Built strictly following GNOME Extensions guidelines with ESM modules, Libadwaita preferences, GSettings schemas, and clean lifecycle management.
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 | Quick Settings Menu | Top Bar Indicator Menu |
 | :---: | :---: |
@@ -41,7 +42,7 @@ A powerful, elegant GNOME Shell extension that lets you quickly select and custo
 
 ---
 
-## 💻 Compatibility
+## Compatibility
 
 - **GNOME Shell**: 45, 46, 47, 48, 49, 50+
 - **Display Servers**: Wayland and X11
@@ -49,7 +50,7 @@ A powerful, elegant GNOME Shell extension that lets you quickly select and custo
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### Option 1: Direct Download from GitHub Releases (Fastest)
 
@@ -86,14 +87,14 @@ gnome-extensions enable screen-blank-delay@midoreigh
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions, bug reports, and suggestions are warmly welcome!
 Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our branch strategy (`feature/*`, `fix/*`), local testing, and pull request workflow.
 
 ---
 
-## 🛠️ Configuration & Preferences
+## Configuration & Preferences
 
 Open the extension preferences with:
 
@@ -117,7 +118,7 @@ Or via the **Extensions** application / **Extension Settings…** in the Quick S
 
 ---
 
-## 📦 Building & Packaging
+## Building & Packaging
 
 To create an extension zip archive for uploading to [extensions.gnome.org](https://extensions.gnome.org):
 
@@ -129,13 +130,13 @@ This generates `screen-blank-delay@midoreigh.shell-extension.zip`.
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the **GNU General Public License v3.0** (GPL-3.0) - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 👤 Author
+## Author
 
 Developed by **midoreigh** (<contact@midoreigh.com>).
 Contributions, bug reports, and suggestions are welcome via GitHub Issues and Pull Requests!
