@@ -503,29 +503,29 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
 
         this.connect('clicked', () => this._onToggleClicked());
 
+        // Settings gear button directly on the Quick Settings tile
+        this._tileSettingsBtn = new St.Button({
+            style_class: 'quick-toggle-menu-button icon-button screen-blank-tile-btn',
+            child: new St.Icon({
+                icon_name: 'emblem-system-symbolic',
+                icon_size: 14,
+            }),
+            can_focus: true,
+            accessible_name: _('Screen Blank Settings'),
+            y_align: Clutter.ActorAlign.CENTER,
+        });
+        this._tileSettingsBtn.connect('clicked', () => {
+            this._extension.openPreferences();
+            Main.panel.closeQuickSettings();
+        });
+        this._box.insert_child_at_index(this._tileSettingsBtn, 1);
+
         // Header
         this.menu.setHeader(
             'preferences-desktop-screensaver-symbolic',
             _('Screen Blank Delay'),
             _('Configure idle timeouts')
         );
-
-        // Settings button in Quick Settings header
-        const headerPrefsBtn = new St.Button({
-            style_class: 'button',
-            child: new St.Icon({
-                icon_name: 'emblem-system-symbolic',
-                icon_size: 16,
-            }),
-            can_focus: true,
-            accessible_name: _('Screen Blank Settings'),
-        });
-        headerPrefsBtn.connect('clicked', () => {
-            this._extension.openPreferences();
-            Main.panel.closeQuickSettings();
-        });
-        if (typeof this.menu.addHeaderSuffix === 'function')
-            this.menu.addHeaderSuffix(headerPrefsBtn);
 
         this._buildMenu();
         this.sync();
@@ -549,26 +549,30 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
     _buildMenu() {
         this.menu.removeAll();
 
-        // System Delay Section
-        this._systemSection = new PopupMenu.PopupMenuSection();
-        const systemHeader = new PopupMenu.PopupMenuItem(_('System Delay (All Screens)'), {reactive: false});
-        systemHeader.add_style_class_name('screen-blank-monitor-title');
-        this._systemSection.addMenuItem(systemHeader);
-
         const delayOptions = getDelayOptions();
+        const currentSystemDelay = this._sessionSettings.get_uint('idle-delay');
+        const systemDelayStr = currentSystemDelay === 0 ? _('Never') : formatDelay(currentSystemDelay);
+
+        // System Delay as a compact Submenu
+        const systemSubMenu = new PopupMenu.PopupSubMenuMenuItem(
+            `${_('System Delay (All Screens)')}: ${systemDelayStr}`,
+            true
+        );
+        systemSubMenu.icon.icon_name = 'preferences-desktop-screensaver-symbolic';
 
         this._systemItems = new Map();
         for (const opt of delayOptions) {
             const item = new PopupMenu.PopupMenuItem(opt.label);
+            item.setOrnament(opt.seconds === currentSystemDelay ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
             item.connect('activate', () => {
                 this._sessionSettings.set_uint('idle-delay', opt.seconds);
                 if (opt.seconds > 0)
                     this._extSettings.set_uint('last-active-system-delay', opt.seconds);
             });
             this._systemItems.set(opt.seconds, item);
-            this._systemSection.addMenuItem(item);
+            systemSubMenu.menu.addMenuItem(item);
         }
-        this.menu.addMenuItem(this._systemSection);
+        this.menu.addMenuItem(systemSubMenu);
 
         // Per-Monitor Section (if multiple monitors or per-monitor enabled)
         const monitors = this._extension.blankManager.getMonitorsList();
@@ -684,6 +688,10 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
     }
 
     destroy() {
+        if (this._tileSettingsBtn) {
+            this._tileSettingsBtn.destroy();
+            this._tileSettingsBtn = null;
+        }
         if (this.menu)
             this.menu.destroy();
         super.destroy();
@@ -752,20 +760,30 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
         this.menu.addMenuItem(titleItem);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-        // System Delays
+        // System Delays (compact Submenu)
         const delayOptions = getDelayOptions();
+        const currentDelay = this._sessionSettings.get_uint('idle-delay');
+        const delayStr = currentDelay === 0 ? _('Never') : formatDelay(currentDelay);
+
+        const systemSubMenu = new PopupMenu.PopupSubMenuMenuItem(
+            `${_('System Delay (All Screens)')}: ${delayStr}`,
+            true
+        );
+        systemSubMenu.icon.icon_name = 'preferences-desktop-screensaver-symbolic';
 
         this._systemItems = new Map();
         for (const opt of delayOptions) {
             const item = new PopupMenu.PopupMenuItem(opt.label);
+            item.setOrnament(opt.seconds === currentDelay ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
             item.connect('activate', () => {
                 this._sessionSettings.set_uint('idle-delay', opt.seconds);
                 if (opt.seconds > 0)
                     this._extSettings.set_uint('last-active-system-delay', opt.seconds);
             });
             this._systemItems.set(opt.seconds, item);
-            this.menu.addMenuItem(item);
+            systemSubMenu.menu.addMenuItem(item);
         }
+        this.menu.addMenuItem(systemSubMenu);
 
         // Multi-Monitor Section
         const monitors = this._extension.blankManager.getMonitorsList();

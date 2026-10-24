@@ -12,6 +12,6 @@
     margin-left: 8px;
 }
 
-.screen-blank-action-button {
-    margin: 4px 6px;
+.screen-blank-tile-btn {
+    padding: 0 6px !important;
 }
