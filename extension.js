@@ -915,7 +915,10 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
         this._sessionSettings = new Gio.Settings({schema_id: 'org.gnome.desktop.session'});
         this._extSettings = extension.getSettings();
 
-        const box = new St.BoxLayout({style_class: 'panel-status-menu-box'});
+        const box = new St.BoxLayout({
+            style_class: 'panel-status-menu-box',
+            y_align: Clutter.ActorAlign.CENTER,
+        });
         this._icon = new St.Icon({
             icon_name: 'preferences-desktop-screensaver-symbolic',
             style_class: 'system-status-icon',
@@ -929,7 +932,6 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
         box.add_child(this._label);
         this.add_child(box);
 
-        this._buildMenu();
         this.sync();
     }
 
@@ -1075,8 +1077,15 @@ export default class ScreenBlankDelayExtension extends Extension {
 
         // Top Bar
         if (showTB && !this._topBarButton) {
+            if (Main.panel.statusArea[this.uuid]) {
+                try {
+                    Main.panel.statusArea[this.uuid].destroy();
+                } catch (e) {
+                    delete Main.panel.statusArea[this.uuid];
+                }
+            }
             this._topBarButton = new ScreenBlankTopBarButton(this);
-            Main.panel.addToStatusArea(this.uuid, this._topBarButton);
+            Main.panel.addToStatusArea(this.uuid, this._topBarButton, 1, 'right');
         } else if (!showTB && this._topBarButton) {
             this._topBarButton.destroy();
             this._topBarButton = null;
@@ -1128,6 +1137,14 @@ export default class ScreenBlankDelayExtension extends Extension {
         if (this._topBarButton) {
             this._topBarButton.destroy();
             this._topBarButton = null;
+        }
+
+        if (Main.panel.statusArea[this.uuid]) {
+            try {
+                Main.panel.statusArea[this.uuid].destroy();
+            } catch (e) {
+                delete Main.panel.statusArea[this.uuid];
+            }
         }
 
         if (this.blankManager) {

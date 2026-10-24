@@ -38,13 +38,53 @@ export default class ScreenBlankDelayPreferences extends ExtensionPreferences {
         const delayOptions = getDelayOptions();
         const systemDelayOptions = delayOptions.filter(opt => opt.seconds !== -1);
 
-        window.set_default_size(680, 580);
+        window.set_default_size(680, 640);
+        window.icon_name = 'preferences-desktop-screensaver-symbolic';
+        if (typeof window.set_icon_name === 'function')
+            window.set_icon_name('preferences-desktop-screensaver-symbolic');
 
         // ================= PAGE 1: GENERAL =================
         const generalPage = new Adw.PreferencesPage({
             title: _('General'),
             icon_name: 'preferences-system-symbolic',
         });
+
+        // App Banner
+        const bannerGroup = new Adw.PreferencesGroup();
+        const bannerBox = new Gtk.Box({
+            orientation: Gtk.Orientation.HORIZONTAL,
+            spacing: 16,
+            margin_top: 6,
+            margin_bottom: 10,
+            halign: Gtk.Align.CENTER,
+        });
+
+        const appIcon = new Gtk.Image({
+            icon_name: 'preferences-desktop-screensaver-symbolic',
+            pixel_size: 48,
+        });
+        bannerBox.append(appIcon);
+
+        const titleBox = new Gtk.Box({
+            orientation: Gtk.Orientation.VERTICAL,
+            valign: Gtk.Align.CENTER,
+            spacing: 2,
+        });
+        const appTitle = new Gtk.Label({
+            label: '<span size="large" weight="bold">Screen Blank Delay</span>',
+            use_markup: true,
+            xalign: 0,
+        });
+        const appSubtitle = new Gtk.Label({
+            label: '<span color="#888888">' + _('Per-screen and system idle timeout controls') + '</span>',
+            use_markup: true,
+            xalign: 0,
+        });
+        titleBox.append(appTitle);
+        titleBox.append(appSubtitle);
+        bannerBox.append(titleBox);
+        bannerGroup.add(bannerBox);
+        generalPage.add(bannerGroup);
 
         // Group 1: Display Location
         const locationGroup = new Adw.PreferencesGroup({
