@@ -901,6 +901,11 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
             this.sync();
         });
 
+        this.menu.connect('open-state-changed', (m, isOpen) => {
+            if (isOpen)
+                this._buildMenu();
+        });
+
         this.sync();
     }
 
