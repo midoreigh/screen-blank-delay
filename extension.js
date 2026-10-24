@@ -681,6 +681,11 @@ class MonitorBlankManager {
 
         this._clearAllOverlays();
         this._monitors.clear();
+
+        this._settings = null;
+        this._sessionSettings = null;
+        this._idleMonitor = null;
+        this._extension = null;
     }
 }
 
@@ -721,7 +726,7 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
             accessible_name: _('Screen Blank Settings'),
             y_align: Clutter.ActorAlign.CENTER,
         });
-        this._headerSettingsBtn.connect('clicked', () => {
+        this._headerSettingsBtnSignalId = this._headerSettingsBtn.connect('clicked', () => {
             this._extension.openPreferences();
             Main.panel.closeQuickSettings();
         });
@@ -834,11 +839,19 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
 
     destroy() {
         if (this._headerSettingsBtn) {
+            if (this._headerSettingsBtnSignalId) {
+                this._headerSettingsBtn.disconnect(this._headerSettingsBtnSignalId);
+                this._headerSettingsBtnSignalId = 0;
+            }
             this._headerSettingsBtn.destroy();
             this._headerSettingsBtn = null;
         }
         if (this.menu)
             this.menu.destroy();
+        this._extension = null;
+        this._settings = null;
+        this._sessionSettings = null;
+        this._blankManager = null;
         super.destroy();
     }
 });
@@ -901,7 +914,7 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
             this.sync();
         });
 
-        this.menu.connect('open-state-changed', (m, isOpen) => {
+        this._menuOpenSignalId = this.menu.connect('open-state-changed', (m, isOpen) => {
             if (isOpen)
                 this._buildMenu();
         });
@@ -1021,10 +1034,18 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
     }
 
     destroy() {
+        if (this._menuOpenSignalId) {
+            this.menu.disconnect(this._menuOpenSignalId);
+            this._menuOpenSignalId = 0;
+        }
         if (this._styleSignalId) {
             this._extSettings.disconnect(this._styleSignalId);
             this._styleSignalId = 0;
         }
+        this._extSettings = null;
+        this._sessionSettings = null;
+        this._blankManager = null;
+        this._extension = null;
         super.destroy();
     }
 });

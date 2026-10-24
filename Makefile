@@ -2,12 +2,21 @@ UUID = screen-blank-delay@midoreigh
 INSTALL_DIR = $(HOME)/.local/share/gnome-shell/extensions/$(UUID)
 SCHEMAS_DIR = schemas
 
-.PHONY: all schemas package install uninstall enable disable clean test-prefs
+.PHONY: all schemas package install uninstall enable disable clean test-prefs lint
 
 all: schemas
 
 test-prefs: schemas
 	GI_TYPELIB_PATH=/usr/lib/gnome-shell/girepository-1.0:/usr/lib/x86_64-linux-gnu/mutter-18 ./scripts/run-prefs.js
+
+lint: package
+	@if command -v shexli >/dev/null 2>&1; then \
+		shexli $(UUID).shell-extension.zip; \
+	elif [ -x /tmp/shexli_venv/bin/shexli ]; then \
+		/tmp/shexli_venv/bin/shexli $(UUID).shell-extension.zip; \
+	else \
+		echo "shexli not found. Install with: pip install -U shexli"; \
+	fi
 
 schemas:
 	glib-compile-schemas $(SCHEMAS_DIR)
