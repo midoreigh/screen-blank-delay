@@ -21,7 +21,7 @@ package: schemas
 install: schemas
 	rm -rf "$(INSTALL_DIR)"
 	mkdir -p "$(INSTALL_DIR)"
-	cp -r metadata.json extension.js prefs.js stylesheet.css schemas po LICENSE README.md "$(INSTALL_DIR)/"
+	cp -r metadata.json extension.js prefs.js stylesheet.css reload.js schemas po LICENSE README.md "$(INSTALL_DIR)/"
 	glib-compile-schemas "$(INSTALL_DIR)/schemas"
 	@echo "Installed $(UUID) to $(INSTALL_DIR)"
 
