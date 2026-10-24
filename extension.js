@@ -252,6 +252,13 @@ class MonitorBlankManager {
         this._pointerWatchTimerId = 0;
         this._lastPointer = {x: -1, y: -1};
         this._lastBlankAllTime = 0;
+        this._powerSaveTimerId = 0;
+        this._cursorVisibleInhibited = false;
+        try {
+            this._cursorTracker = global.backend?.get_cursor_tracker?.() ?? null;
+        } catch {
+            this._cursorTracker = null;
+        }
 
         this._wakeOnPointerMove = this._settings.get_boolean('wake-on-pointer-move');
         this._fadeAnimation = this._settings.get_boolean('fade-animation');
@@ -300,18 +307,19 @@ class MonitorBlankManager {
     }
 
     _onUserActive() {
-        const now = GLib.get_monotonic_time() / 1000000;
+        this._activeWatchId = 0;
         const nowMicro = GLib.get_monotonic_time();
-        if (this._lastBlankAllTime && nowMicro - this._lastBlankAllTime < 1000000)
+        if (this._lastBlankAllTime && nowMicro - this._lastBlankAllTime < 800000) {
+            this._setupActiveWatch();
             return;
+        }
 
+        const now = nowMicro / 1000000;
         for (const info of this._monitors.values()) {
             info.lastActivityTime = now;
             if (info.isOverlayBlanked)
                 this.unblankMonitor(info.connector);
         }
-        // re-register active watch
-        this._activeWatchId = 0;
         this._setupActiveWatch();
     }
 
@@ -497,11 +505,111 @@ class MonitorBlankManager {
         this._extension.syncUI();
     }
 
+    _showPointer() {
+        if (this._cursorVisibleInhibited) {
+            try {
+                const seat = global.stage.context.get_backend().get_default_seat();
+                seat.uninhibit_unfocus();
+            } catch {
+                // Ignore if seat unfocus uninhibiting is not supported
+            }
+            try {
+                if (this._cursorTracker)
+                    this._cursorTracker.uninhibit_cursor_visibility();
+            } catch {
+                // Ignore if cursor tracker uninhibit fails
+            }
+            this._cursorVisibleInhibited = false;
+        }
+    }
+
+    _hidePointer() {
+        if (!this._cursorVisibleInhibited) {
+            try {
+                const seat = global.stage.context.get_backend().get_default_seat();
+                seat.inhibit_unfocus();
+            } catch {
+                // Ignore if seat unfocus inhibiting is not supported
+            }
+            try {
+                if (this._cursorTracker)
+                    this._cursorTracker.inhibit_cursor_visibility();
+            } catch {
+                // Ignore if cursor tracker inhibit fails
+            }
+            this._cursorVisibleInhibited = true;
+        }
+    }
+
+    _setPowerSaveMode(mode) {
+        try {
+            Gio.DBus.session.call(
+                'org.gnome.Mutter.DisplayConfig',
+                '/org/gnome/Mutter/DisplayConfig',
+                'org.freedesktop.DBus.Properties',
+                'Set',
+                new GLib.Variant('(ssv)', [
+                    'org.gnome.Mutter.DisplayConfig',
+                    'PowerSaveMode',
+                    new GLib.Variant('i', mode),
+                ]),
+                null,
+                Gio.DBusCallFlags.NONE,
+                -1,
+                null,
+                (conn, res) => {
+                    try {
+                        conn.call_finish(res);
+                    } catch {
+                        // Mutter display config not available or unsupported
+                    }
+                }
+            );
+        } catch {
+            // Mutter display config not available or unsupported
+        }
+    }
+
+    _syncPowerSave() {
+        const anyBlanked = Array.from(this._monitors.values()).some(m => m.isOverlayBlanked);
+        const allBlanked = this._monitors.size > 0 && Array.from(this._monitors.values()).every(m => m.isOverlayBlanked);
+
+        if (allBlanked) {
+            this._hidePointer();
+            const fadeDelay = this._fadeAnimation ? 650 : 0;
+            if (this._powerSaveTimerId) {
+                GLib.source_remove(this._powerSaveTimerId);
+                this._powerSaveTimerId = 0;
+            }
+
+            if (fadeDelay > 0) {
+                this._powerSaveTimerId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, fadeDelay, () => {
+                    this._powerSaveTimerId = 0;
+                    const stillAll = this._monitors.size > 0 && Array.from(this._monitors.values()).every(m => m.isOverlayBlanked);
+                    if (stillAll)
+                        this._setPowerSaveMode(3);
+                    return GLib.SOURCE_REMOVE;
+                });
+            } else {
+                this._setPowerSaveMode(3);
+            }
+        } else {
+            if (this._powerSaveTimerId) {
+                GLib.source_remove(this._powerSaveTimerId);
+                this._powerSaveTimerId = 0;
+            }
+            this._setPowerSaveMode(0);
+            if (!anyBlanked)
+                this._showPointer();
+        }
+    }
+
     blankMonitorNow(connector) {
         const mon = this._monitors.get(connector);
         if (mon && !mon.isOverlayBlanked) {
             this._lastBlankAllTime = GLib.get_monotonic_time();
             this._blankMonitor(mon);
+            this._syncPowerSave();
         }
     }
 
@@ -512,6 +620,7 @@ class MonitorBlankManager {
             if (!mon.isOverlayBlanked)
                 this._blankMonitor(mon);
         }
+        this._syncPowerSave();
     }
 
     unblankMonitor(connector) {
@@ -521,6 +630,7 @@ class MonitorBlankManager {
 
         mon.isOverlayBlanked = false;
         mon.lastActivityTime = GLib.get_monotonic_time() / 1000000;
+        this._syncPowerSave();
 
         if (mon.overlayActor) {
             const actor = mon.overlayActor;
@@ -558,7 +668,7 @@ class MonitorBlankManager {
 
         overlay.connect('button-press-event', () => {
             const now = GLib.get_monotonic_time();
-            if (this._lastBlankAllTime && now - this._lastBlankAllTime < 1000000)
+            if (this._lastBlankAllTime && now - this._lastBlankAllTime < 800000)
                 return Clutter.EVENT_STOP;
             this.unblankMonitor(mon.connector);
             return Clutter.EVENT_STOP;
@@ -566,7 +676,7 @@ class MonitorBlankManager {
 
         overlay.connect('scroll-event', () => {
             const now = GLib.get_monotonic_time();
-            if (this._lastBlankAllTime && now - this._lastBlankAllTime < 1000000)
+            if (this._lastBlankAllTime && now - this._lastBlankAllTime < 800000)
                 return Clutter.EVENT_STOP;
             this.unblankMonitor(mon.connector);
             return Clutter.EVENT_STOP;
@@ -574,7 +684,7 @@ class MonitorBlankManager {
 
         overlay.connect('motion-event', () => {
             const now = GLib.get_monotonic_time();
-            if (this._lastBlankAllTime && now - this._lastBlankAllTime < 1500000)
+            if (this._lastBlankAllTime && now - this._lastBlankAllTime < 800000)
                 return Clutter.EVENT_PROPAGATE;
             if (this._wakeOnPointerMove)
                 this.unblankMonitor(mon.connector);
@@ -583,7 +693,7 @@ class MonitorBlankManager {
 
         overlay.connect('key-press-event', () => {
             const now = GLib.get_monotonic_time();
-            if (this._lastBlankAllTime && now - this._lastBlankAllTime < 1000000)
+            if (this._lastBlankAllTime && now - this._lastBlankAllTime < 800000)
                 return Clutter.EVENT_STOP;
             this.unblankMonitor(mon.connector);
             return Clutter.EVENT_STOP;
@@ -605,6 +715,13 @@ class MonitorBlankManager {
     }
 
     _clearAllOverlays() {
+        if (this._powerSaveTimerId) {
+            GLib.source_remove(this._powerSaveTimerId);
+            this._powerSaveTimerId = 0;
+        }
+        this._setPowerSaveMode(0);
+        this._showPointer();
+
         for (const mon of this._monitors.values()) {
             mon.isOverlayBlanked = false;
             if (mon.overlayActor) {
@@ -642,7 +759,7 @@ class MonitorBlankManager {
         const now = GLib.get_monotonic_time() / 1000000;
         const nowMicro = GLib.get_monotonic_time();
 
-        if (this._lastBlankAllTime && nowMicro - this._lastBlankAllTime < 1500000)
+        if (this._lastBlankAllTime && nowMicro - this._lastBlankAllTime < 800000)
             return;
 
         for (const mon of this._monitors.values()) {
@@ -676,8 +793,10 @@ class MonitorBlankManager {
                 continue; // Never
 
             const idleDuration = now - mon.lastActivityTime;
-            if (idleDuration >= effectiveDelay)
+            if (idleDuration >= effectiveDelay) {
                 this._blankMonitor(mon);
+                this._syncPowerSave();
+            }
         }
     }
 
@@ -722,6 +841,7 @@ class MonitorBlankManager {
         this._settings = null;
         this._sessionSettings = null;
         this._idleMonitor = null;
+        this._cursorTracker = null;
         this._extension = null;
     }
 }
