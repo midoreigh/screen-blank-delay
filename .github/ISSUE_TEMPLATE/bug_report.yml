@@ -1,0 +1,43 @@
+name: Bug Report
+description: Create a report to help fix a bug
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting an issue! Please provide as much detail as possible.
+  - type: input
+    id: gnome_version
+    attributes:
+      label: GNOME Shell Version
+      description: Run `gnome-shell --version`
+      placeholder: "e.g. 47.1, 48.0, 50.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: session_type
+    attributes:
+      label: Session Type
+      options:
+        - Wayland
+        - X11
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the Bug
+      description: A clear and concise description of what happened.
+    validations:
+      required: true
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to Reproduce
+      placeholder: "1. Go to...\n2. Click on...\n3. See error"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: GNOME Shell Logs (if available)
+      description: Output from `journalctl -f -o cat /usr/bin/gnome-shell`

@@ -3,6 +3,7 @@
   <h1>Screen Blank Delay</h1>
   <p><strong>Quickly select and customize screen blank delay from GNOME Shell Quick Settings or Top Bar, with per-monitor timeout support.</strong></p>
 
+  [![GitHub Release](https://img.shields.io/github/v/release/midoreigh/screen-blank-delay?color=blue&logo=github)](https://github.com/midoreigh/screen-blank-delay/releases)
   [![GNOME Shell 45-50](https://img.shields.io/badge/GNOME%20Shell-45%20%7C%2046%20%7C%2047%20%7C%2048%20%7C%2049%20%7C%2050-blue.svg)](https://extensions.gnome.org)
   [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
@@ -50,11 +51,24 @@ A powerful, elegant GNOME Shell extension that lets you quickly select and custo
 
 ## 🚀 Installation
 
-### Option 1: From GNOME Extensions Store (Recommended)
+### Option 1: Direct Download from GitHub Releases (Fastest)
 
-*Coming soon on [extensions.gnome.org](https://extensions.gnome.org).*
+1. Download the latest `screen-blank-delay@midoreigh.shell-extension.zip` from [GitHub Releases](https://github.com/midoreigh/screen-blank-delay/releases/latest).
+2. Install with the GNOME Extensions CLI:
+   ```bash
+   gnome-extensions install --force screen-blank-delay@midoreigh.shell-extension.zip
+   ```
+3. Enable the extension:
+   ```bash
+   gnome-extensions enable screen-blank-delay@midoreigh
+   ```
+   *(On Wayland, log out and log back in once if this is the first time installing).*
 
-### Option 2: Local Installation from Source
+### Option 2: From GNOME Extensions Store
+
+*Pending review on [extensions.gnome.org](https://extensions.gnome.org).*
+
+### Option 3: Local Installation from Source
 
 Clone this repository and run:
 
@@ -70,7 +84,12 @@ Then enable the extension:
 gnome-extensions enable screen-blank-delay@midoreigh
 ```
 
-*(On Wayland, log out and log back in or restart GNOME Shell if required for new extensions to register).*
+---
+
+## 🤝 Contributing
+
+Contributions, bug reports, and suggestions are warmly welcome!
+Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our branch strategy (`feature/*`, `fix/*`), local testing, and pull request workflow.
 
 ---
 
