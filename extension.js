@@ -253,6 +253,7 @@ class MonitorBlankManager {
         this._lastPointer = {x: -1, y: -1};
         this._lastBlankAllTime = 0;
         this._powerSaveTimerId = 0;
+        this._weBlankedPowerSave = false;
         this._cursorVisibleInhibited = false;
         try {
             this._cursorTracker = global.backend?.get_cursor_tracker?.() ?? null;
@@ -542,6 +543,14 @@ class MonitorBlankManager {
     }
 
     _setPowerSaveMode(mode) {
+        if (mode === 3) {
+            this._weBlankedPowerSave = true;
+        } else if (mode === 0) {
+            if (!this._weBlankedPowerSave)
+                return;
+            this._weBlankedPowerSave = false;
+        }
+
         try {
             Gio.DBus.session.call(
                 'org.gnome.Mutter.DisplayConfig',
@@ -598,8 +607,9 @@ class MonitorBlankManager {
                 GLib.source_remove(this._powerSaveTimerId);
                 this._powerSaveTimerId = 0;
             }
-            this._setPowerSaveMode(0);
-            if (!anyBlanked)
+            if (this._weBlankedPowerSave)
+                this._setPowerSaveMode(0);
+            if (!anyBlanked && this._cursorVisibleInhibited)
                 this._showPointer();
         }
     }
@@ -719,8 +729,10 @@ class MonitorBlankManager {
             GLib.source_remove(this._powerSaveTimerId);
             this._powerSaveTimerId = 0;
         }
-        this._setPowerSaveMode(0);
-        this._showPointer();
+        if (this._weBlankedPowerSave)
+            this._setPowerSaveMode(0);
+        if (this._cursorVisibleInhibited)
+            this._showPointer();
 
         for (const mon of this._monitors.values()) {
             mon.isOverlayBlanked = false;
@@ -747,6 +759,9 @@ class MonitorBlankManager {
     }
 
     _checkPointerPosition() {
+        if (Main.sessionMode.isLocked)
+            return;
+
         const [x, y] = global.get_pointer();
         const dx = Math.abs(x - this._lastPointer.x);
         const dy = Math.abs(y - this._lastPointer.y);
