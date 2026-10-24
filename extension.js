@@ -170,7 +170,11 @@ class MonitorBlankManager {
             for (const mon of monitors) {
                 const connector = mon[0][0];
                 const props = mon[2] || {};
-                const displayName = props['display-name'] || connector;
+                let displayName = props['display-name'];
+                if (displayName && typeof displayName.deepUnpack === 'function')
+                    displayName = displayName.deepUnpack();
+                if (!displayName || typeof displayName !== 'string')
+                    displayName = connector;
                 connectorNames.set(connector, displayName);
             }
 
@@ -203,7 +207,11 @@ class MonitorBlankManager {
             const key = `${m.x},${m.y}`;
             const info = displayMap.get(key) || {};
             const connector = info.connector || `Display-${i + 1}`;
-            const displayName = info.displayName || _('Display %d').format(i + 1);
+            let displayName = info.displayName || _('Display %d').format(i + 1);
+            if (displayName && typeof displayName.deepUnpack === 'function')
+                displayName = displayName.deepUnpack();
+            if (typeof displayName !== 'string')
+                displayName = String(displayName);
             const isPrimary = info.isPrimary ?? (i === Main.layoutManager.primaryIndex);
 
             seenConnectors.add(connector);
@@ -559,11 +567,12 @@ class ScreenBlankQuickToggle extends QuickSettings.QuickMenuToggle {
                 const currentDelayStr = mon.delay === -1
                     ? _('Follow System')
                     : formatDelay(mon.delay);
+                const title = mon.displayName && mon.displayName !== mon.connector
+                    ? `${mon.displayName} (${mon.connector})`
+                    : (mon.displayName || mon.connector);
+                const itemText = `${title} ${badge}: ${currentDelayStr}`.replace(/\s+/g, ' ').trim();
 
-                const subMenuItem = new PopupMenu.PopupSubMenuMenuItem(
-                    `${mon.displayName} ${badge}: ${currentDelayStr}`,
-                    true
-                );
+                const subMenuItem = new PopupMenu.PopupSubMenuMenuItem(itemText, true);
                 subMenuItem.icon.icon_name = 'video-display-symbolic';
 
                 // Follow System option
@@ -744,11 +753,12 @@ class ScreenBlankTopBarButton extends PanelMenu.Button {
                 const currentDelayStr = mon.delay === -1
                     ? _('Follow System')
                     : formatDelay(mon.delay);
+                const title = mon.displayName && mon.displayName !== mon.connector
+                    ? `${mon.displayName} (${mon.connector})`
+                    : (mon.displayName || mon.connector);
+                const itemText = `${title} ${badge}: ${currentDelayStr}`.replace(/\s+/g, ' ').trim();
 
-                const subMenuItem = new PopupMenu.PopupSubMenuMenuItem(
-                    `${mon.displayName} ${badge}: ${currentDelayStr}`,
-                    true
-                );
+                const subMenuItem = new PopupMenu.PopupSubMenuMenuItem(itemText, true);
                 subMenuItem.icon.icon_name = 'video-display-symbolic';
 
                 const followItem = new PopupMenu.PopupMenuItem(_('Follow System'));

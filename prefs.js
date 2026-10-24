@@ -251,7 +251,11 @@ export default class ScreenBlankDelayPreferences extends ExtensionPreferences {
             for (let i = 0; i < nMonitors; i++) {
                 const mon = monitorsList.get_item(i);
                 const connector = mon.get_connector() || `Display-${i + 1}`;
-                const desc = mon.get_description() || mon.get_model() || _('Display %d').format(i + 1);
+                let desc = mon.get_description() || mon.get_model() || _('Display %d').format(i + 1);
+                if (desc && typeof desc.deepUnpack === 'function')
+                    desc = desc.deepUnpack();
+                if (typeof desc !== 'string')
+                    desc = String(desc);
 
                 const row = new Adw.ComboRow({
                     title: `${desc} (${connector})`,
